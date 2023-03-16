@@ -1,10 +1,14 @@
 import React from 'react'
+import '../index.css';
+
 
 const PokeCard = ({pokemon}) => {
     const frontSprite = pokemon.sprites && pokemon.sprites['front_default'];
     const id = pokemon.id;
     const name = pokemon.name;
     const type = pokemon.types && pokemon.types.length > 0 ? pokemon.types[0].type.name : '';
+
+    const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
 
     let bgColor = '';
 
@@ -67,19 +71,20 @@ const PokeCard = ({pokemon}) => {
             bgColor = '#FFFFFF';
             break;
     }
-
     return (
-        <div className="card text-center mx-auto mb-4" style={{ maxWidth: "18rem", minWidth: "14rem", backgroundColor: bgColor }} key={id}>
-            <div className="text-white mt-4">
-                <h5 className="card-title">{name}</h5>
-            </div>
-            <div className="card-body">
-              {frontSprite && <img src={frontSprite} alt={name} className="img-fluid" />}
-              <h6 className="card-subtitle mb-2 text-muted">Id: {id}</h6>
-              <h6 className="card-subtitle mb-2 text-muted">Type: {type}</h6>
-            </div>
-        </div>
-    )
+<div class="flex-1 m-4 mt-16 p-8 relative cursor-pointer border-2 border-white transition duration-100 
+    hover:border-gray-300 hover:-translate-y-1 hover:scale-105 h-32 w-full" style={{ backgroundColor: bgColor }}>
+    <img class="search-pokemon-image transform transition duration-100" src={frontSprite} alt={name} />
+    <span class="font-bold text-sm">N° {id}</span>
+    <h3 class="text-lg">{name}</h3>
+    {type}
+</div>
+
+
+      )
+       
 };
+
+
 
 export default PokeCard;

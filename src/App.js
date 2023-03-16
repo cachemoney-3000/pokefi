@@ -61,17 +61,16 @@ class App extends Component {
   
 
   render() {
-    const {pokemonDetails, loading} = this.state;
-
-    const renderedPokemonList = pokemonDetails.map(pokemon => (
+    const { pokemonDetails, loading } = this.state;
+  
+    const renderedPokemonList = pokemonDetails.map((pokemon) => (
       <PokeCard pokemon={pokemon} key={pokemon.id} />
     ));
-    
-
+  
     return (
       <div>
-        <div className="container">
-          <div className="row row-cols-2">
+        <div className="container p-14">
+          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 justify-items-center">
             {renderedPokemonList}
             <div id="intersection"></div>
           </div>
@@ -80,6 +79,7 @@ class App extends Component {
       </div>
     );
   }
+  
 }
 
 export default App;
