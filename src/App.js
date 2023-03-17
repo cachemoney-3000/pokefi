@@ -10,7 +10,7 @@ class App extends Component {
       pokemons : [],
       pokemonDetails : [],
       offset: 0,
-      loadNumber: 24,
+      loadNumber: 20,
       loading: false,
       selectedPokemon: null
     }
@@ -48,16 +48,22 @@ class App extends Component {
     .then(response => response.json())
     .then(data => {
       if (data) {
-        this.setState({pokemons : data.results, loading: true}) // set loading to true here
-  
-        this.state.pokemons.map(pokemon => {
+        const { pokemons } = this.state;
+        this.setState({pokemons : [...pokemons, ...data.results]}) // combine new and existing pokemons
+        
+        data.results.forEach(pokemon => {
           fetch(pokemon.url)
           .then(response => response.json())
           .then(data => {
             if (data) {
               var temp = this.state.pokemonDetails
               temp.push(data)
-              this.setState({pokemonDetails: temp, loading: false}) // set loading to false here
+              this.setState({pokemonDetails: temp}) // update pokemon details
+                
+              // check if all pokemon details are fetched
+              if (temp.length === pokemons.length + data.results.indexOf(pokemon) + 1) {
+                this.setState({ loading: false }); // set loading to false
+              }
             }            
           })
           .catch(console.log)
@@ -96,8 +102,7 @@ class App extends Component {
       </div>
     );
   }
-  
-  
+
 }
       
 export default App;

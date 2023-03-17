@@ -7,6 +7,7 @@ const PokeCard = ({ pokemon, onClick }) => {
   const id = pokemon.id;
   const name = pokemon.name;
   const types = pokemon.types || [];
+  const hp = pokemon.stats.find(stat => stat.stat.name === "hp").base_stat;
 
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
 
@@ -73,38 +74,46 @@ const PokeCard = ({ pokemon, onClick }) => {
 
   const typeSpans = types.map((type, index) => (
     <span
-        key={index}
-        className="block bg-white rounded-lg text-xs px-3 py-2 leading-none 
+      key={index}
+      className="block bg-white rounded-lg text-xs px-3 py-2 leading-none 
         flex items-center mr-0 font-semibold"
-        style={{ marginBottom: '5px' , color: bgColor }}
+      style={{ marginBottom: '5px', color: bgColor }}
     >
-        {type.type.name.charAt(0).toUpperCase() + type.type.name.slice(1)}
+      {type.type.name.charAt(0).toUpperCase() + type.type.name.slice(1)}
     </span>
-));
+  ));
 
-  return (
-    <div
-      className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-52 lg:w-72 cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
-      style={{ backgroundColor: bgColor }}
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="relative h-fit pb-6 flex items-center justify-center">
-        <img
-          className="absolute top-0 left-1/2 transform -translate-x-1/2"
-          style={{ top: "-50px" }}
-          src={frontSprite}
-          alt={pokemon.name}
-        />
-      </div>
-      <div className="relative text-white px-6 py-6 h-fit justify-center mb-2">
-        <div className="font-light text-sm">No. {pokemon.id}</div>
-        <div className="font-medium text-xl mb-2">{name.charAt(0).toUpperCase() + name.slice(1)}</div>
-        <div className="flex gap-2">{typeSpans}</div>
+return (
+  <div
+    className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-52 lg:w-72 cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
+    style={{ backgroundColor: bgColor }}
+    onClick={onClick}
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
+  >
+    <div className="relative h-fit pb-6 flex items-center justify-center">
+      <img
+        className="absolute top-0 left-1/2 transform -translate-x-1/2"
+        style={{ top: "-50px" }}
+        src={frontSprite}
+        alt={pokemon.name}
+      />
+    </div>
+    <div className="relative text-white px-6 py-6 h-fit justify-center mb-2">
+      <div className="flex justify-between">
+        <div>
+          <div className="font-light text-sm">No. {pokemon.id}</div>
+          <div className="font-medium text-xl mb-2">{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+          <div className="flex gap-2">{typeSpans}</div>
+        </div>
+        <div className="bg-slate-100 flex justify-center items-center rounded-full px-2" style={{ aspectRatio: '1/1', height: '25%', width: '25%' }}>
+          <div className="font-medium text-xs mr-1" style={{ color: bgColor }}>HP</div>
+          <div className="font-semibold text-md" style={{ color: bgColor }}>{pokemon.stats && ` ${pokemon.stats[0].base_stat}`}</div>
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default PokeCard;
