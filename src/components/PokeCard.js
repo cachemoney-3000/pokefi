@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../index.css';
 
 const PokeCard = ({ pokemon, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const frontSprite = pokemon.sprites && pokemon.sprites['front_default'];
   const id = pokemon.id;
   const name = pokemon.name;
-  const type =
-    pokemon.types && pokemon.types.length > 0 ? pokemon.types[0].type.name : '';
+  const types = pokemon.types || [];
 
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
 
   let bgColor = '';
-
-  switch (type) {
+  switch (types[0]?.type.name) {
     case 'normal':
       bgColor = '#A8A77A';
       break;
@@ -72,33 +71,37 @@ const PokeCard = ({ pokemon, onClick }) => {
       break;
   }
 
-  const handleClick = () => {
-    console.log(id);
-  };
-
-  
+  const typeSpans = types.map((type, index) => (
+    <span
+        key={index}
+        className="block bg-white rounded-lg text-xs px-3 py-2 leading-none 
+        flex items-center mr-0 font-semibold"
+        style={{ marginBottom: '5px' , color: bgColor }}
+    >
+        {type.type.name.charAt(0).toUpperCase() + type.type.name.slice(1)}
+    </span>
+));
 
   return (
     <div
-      className="flex-shrink-0 m-6 relative overflow-hidden rounded-lg max-w-xs shadow-lg h-full cursor-pointer"
+      className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-52 lg:w-72 cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
       style={{ backgroundColor: bgColor }}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative h-40 pt-10 px-10 flex items-center justify-center">
+      <div className="relative h-fit pb-6 flex items-center justify-center">
         <img
-          className="relative w-40"
+          className="absolute top-0 left-1/2 transform -translate-x-1/2"
+          style={{ top: "-50px" }}
           src={frontSprite}
           alt={pokemon.name}
         />
       </div>
-      <div className="relative text-white px-6 pb-6">
-        <span className="block opacity-75 -mb-1">{type}</span>
-        <div className="flex justify-between">
-          <span className="block font-semibold text-xl">{name}</span>
-          <span className="block bg-white rounded-full text-purple-500 text-xs font-bold px-3 py-2 leading-none flex items-center">
-            ID: {pokemon.id}
-          </span>
-        </div>
+      <div className="relative text-white px-6 py-6 h-fit justify-center mb-2">
+        <div className="font-light text-sm">No. {pokemon.id}</div>
+        <div className="font-medium text-xl mb-2">{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+        <div className="flex gap-2">{typeSpans}</div>
       </div>
     </div>
   );
