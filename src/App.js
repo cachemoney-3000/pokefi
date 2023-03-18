@@ -1,7 +1,8 @@
-import React, { Component, Suspense, useState } from 'react';
+import React, { Component, Suspense, useState, useEffect } from 'react';
 
 import "./App.css"
 import PokeCard from './components/PokeCard'
+import PokeInfo from './components/PokeInfo'
 
 class App extends Component {
   constructor() {
@@ -12,7 +13,8 @@ class App extends Component {
       offset: 0,
       loadNumber: 20,
       loading: false,
-      selectedPokemon: null
+      selectedPokemon: null,
+      description: ''
     }
     this.handleIntersection = this.handleIntersection.bind(this);
     this.selectPokemon = this.selectPokemon.bind(this);
@@ -31,9 +33,18 @@ class App extends Component {
     }
   }
 
+  async getDescription(pokemon) {
+    const speciesUrl = pokemon.species.url;
+    const response = await fetch(speciesUrl);
+    const data = await response.json();
+    const englishFlavorText = data.flavor_text_entries.find(entry => entry.language.name === 'en').flavor_text.replace('', ' ');
+    this.setState({ description: englishFlavorText });
+  }
+
   selectPokemon(pokemon) {
     console.log(pokemon);
-    this.setState({selectedPokemon: pokemon});
+    this.setState({selectedPokemon: pokemon, loading: true});
+    this.getDescription(pokemon);
   }
   
   componentDidMount() {
@@ -75,7 +86,7 @@ class App extends Component {
   
 
   render() {
-    const { pokemonDetails, loading, selectedPokemon } = this.state;
+    const { pokemonDetails, loading, selectedPokemon, description } = this.state;
     const renderedPokemonList = pokemonDetails.map((pokemon) => (
       <PokeCard 
         pokemon={pokemon} 
@@ -84,25 +95,25 @@ class App extends Component {
     ));
   
     return (
-      <div class="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
-        <div class="w-full lg:w-3/4 p-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
+      <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
+        <div className="w-full lg:w-3/4 p-4 bg-black">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
             {renderedPokemonList}
             <div id="intersection"></div>
           </div>
           <div id="loading">{loading ? 'Loading...' : null}</div>
         </div>
         {selectedPokemon && (
-          <div class="w-58 lg:w-1/4 p-4" style={{ position: 'sticky', top: '0' }}>
-            <PokeCard 
+          <div className="w-58 lg:w-1/4 p-4" style={{ position: 'sticky', top: '0' }}>
+            <PokeInfo 
               pokemon={selectedPokemon} 
+              description={description}
             />
           </div>
         )}
       </div>
     );
-  }
-
+  }  
 }
       
 export default App;
