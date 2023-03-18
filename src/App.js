@@ -44,7 +44,9 @@ class App extends Component {
   selectPokemon(pokemon) {
     console.log(pokemon);
     this.setState({selectedPokemon: pokemon, loading: true});
-    this.getDescription(pokemon);
+    if (pokemon) {
+      this.getDescription(pokemon);
+    }
   }
   
   componentDidMount() {
@@ -83,8 +85,21 @@ class App extends Component {
     })
     .catch(console.log)
   }
-  
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.selectedPokemon !== this.state.selectedPokemon) {
+      if (this.state.loading) {
+        this.setState({ loading: false });
+      } else {
+        this.setState({ loading: true }, () => {
+          setTimeout(() => {
+            this.setState({ loading: false });
+          }, 1000);
+        });
+      }
+    }
+  }
+  
   render() {
     const { pokemonDetails, loading, selectedPokemon, description } = this.state;
     const renderedPokemonList = pokemonDetails.map((pokemon) => (
@@ -96,7 +111,7 @@ class App extends Component {
   
     return (
       <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
-        <div className="w-full lg:w-3/4 p-4 bg-black">
+        <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
             {renderedPokemonList}
             <div id="intersection"></div>
@@ -104,16 +119,21 @@ class App extends Component {
           <div id="loading">{loading ? 'Loading...' : null}</div>
         </div>
         {selectedPokemon && (
-          <div className="w-58 lg:w-1/4 p-4" style={{ position: 'sticky', top: '0' }}>
-            <PokeInfo 
-              pokemon={selectedPokemon} 
-              description={description}
-            />
+          <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
+            <React.Fragment>
+                <PokeInfo 
+                  pokemon={selectedPokemon} 
+                  description={description}
+                />
+              </React.Fragment>
           </div>
         )}
       </div>
     );
-  }  
+  }
+  
+  
+  
 }
       
 export default App;
