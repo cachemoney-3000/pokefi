@@ -14,7 +14,8 @@ class App extends Component {
       loadNumber: 20,
       loading: false,
       selectedPokemon: null,
-      description: ''
+      description: '',
+      evolutionChain: []
     }
     this.handleIntersection = this.handleIntersection.bind(this);
     this.selectPokemon = this.selectPokemon.bind(this);
@@ -41,11 +42,25 @@ class App extends Component {
     this.setState({ description: englishFlavorText });
   }
 
+  async  getEvolutionChain(pokemon) {
+    const speciesUrl = pokemon.species.url;
+    const speciesResponse = await fetch(speciesUrl);
+    const speciesData = await speciesResponse.json();
+  
+    const evolutionChainUrl = speciesData.evolution_chain.url;
+    const evolutionChainResponse = await fetch(evolutionChainUrl);
+    const evolutionChainData = await evolutionChainResponse.json();
+    
+    this.setState({ evolutionChain: evolutionChainData.chain });
+  }
+  
+
   selectPokemon(pokemon) {
     console.log(pokemon);
     this.setState({selectedPokemon: pokemon, loading: true});
     if (pokemon) {
       this.getDescription(pokemon);
+      this.getEvolutionChain(pokemon);
     }
   }
   
@@ -74,9 +89,10 @@ class App extends Component {
               this.setState({pokemonDetails: temp}) // update pokemon details
                 
               // check if all pokemon details are fetched
-              if (temp.length === pokemons.length + data.results.indexOf(pokemon) + 1) {
+              if (temp.length === pokemons.length + (data.results ? data.results.indexOf(pokemon) : 0) + 1) {
                 this.setState({ loading: false }); // set loading to false
               }
+
             }            
           })
           .catch(console.log)
@@ -101,7 +117,7 @@ class App extends Component {
   }
   
   render() {
-    const { pokemonDetails, loading, selectedPokemon, description } = this.state;
+    const { pokemonDetails, loading, selectedPokemon, description, evolutionChain } = this.state;
     const renderedPokemonList = pokemonDetails.map((pokemon) => (
       <PokeCard 
         pokemon={pokemon} 
@@ -124,6 +140,7 @@ class App extends Component {
                 <PokeInfo 
                   pokemon={selectedPokemon} 
                   description={description}
+                  evolutionChain={evolutionChain}
                 />
               </React.Fragment>
           </div>
