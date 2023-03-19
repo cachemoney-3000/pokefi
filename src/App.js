@@ -55,12 +55,12 @@ class App extends Component {
   }
   
 
-  selectPokemon(pokemon) {
-    console.log(pokemon);
-    this.setState({selectedPokemon: pokemon, loading: true});
+  async selectPokemon(pokemon) {
+    console.log(pokemon)
+    this.setState({ selectedPokemon: pokemon, loading: true });
     if (pokemon) {
       this.getDescription(pokemon);
-      this.getEvolutionChain(pokemon);
+      await this.getEvolutionChain(pokemon);
     }
   }
   
@@ -124,7 +124,11 @@ class App extends Component {
         onClick={() => this.selectPokemon(pokemon)}
       />
     ));
-  
+    
+    const handlePokemonClick = (pokemon) => {
+      console.log(`You clicked on ${pokemon}!`);
+    };
+
     return (
       <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
         <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
@@ -134,13 +138,14 @@ class App extends Component {
           </div>
           <div id="loading">{loading ? 'Loading...' : null}</div>
         </div>
-        {selectedPokemon && (
+        {selectedPokemon  && evolutionChain && Object.keys(evolutionChain).length > 0 && (
           <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
             <React.Fragment>
                 <PokeInfo 
                   pokemon={selectedPokemon} 
                   description={description}
                   evolutionChain={evolutionChain}
+                  onPokemonClick={handlePokemonClick}
                 />
               </React.Fragment>
           </div>
