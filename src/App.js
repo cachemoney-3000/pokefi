@@ -8,15 +8,16 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      pokemons : [],
-      pokemonDetails : [],
+      pokemons: [],
+      pokemonDetails: [],
       offset: 0,
       loadNumber: 20,
       loading: false,
       selectedPokemon: null,
       description: '',
-      evolutionChain: []
-    }
+      evolutionChain: [],
+      searchTerm: '',
+    };    
     this.handleIntersection = this.handleIntersection.bind(this);
     this.selectPokemon = this.selectPokemon.bind(this);
   }
@@ -54,7 +55,7 @@ class App extends Component {
     this.setState({ evolutionChain: evolutionChainData.chain });
   }
   
-
+  // Selecting a Pokemon
   async selectPokemon(pokemon) {
     console.log(pokemon)
     this.setState({ selectedPokemon: pokemon, loading: true });
@@ -125,8 +126,15 @@ class App extends Component {
       />
     ));
     
-    const handlePokemonClick = (pokemon) => {
+    const handlePokemonClick = async (pokemon) => {
       console.log(`You clicked on ${pokemon}!`);
+    
+      // Make API call using the name to get full Pokemon information
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+      const data = await response.json();
+    
+      // Pass result to selectPokemon function
+      this.selectPokemon(data);
     };
 
     return (
@@ -153,9 +161,6 @@ class App extends Component {
       </div>
     );
   }
-  
-  
-  
 }
       
 export default App;

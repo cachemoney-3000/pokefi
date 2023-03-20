@@ -1,4 +1,6 @@
 import React, { memo } from 'react';
+import './PokeInfo.css';
+
 
 const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   const { id, name, types, height, weight, abilities, stats } = pokemon;
@@ -16,7 +18,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
       bgColor = '#6390F0';
       break;
     case 'electric':
-      bgColor = '#F7D02C';
+      bgColor = '#f2c20c';
       break;
     case 'grass':
       bgColor = '#7AC74C';
@@ -91,7 +93,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   const headerStyle = "font-medium text-base text-slate-50 text-opacity-80 mb-2 leading-none flex items-center justify-center mr-0"
   
   return (
-    <div className="p-4 mt-10 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
+    <div className="PokeInfo p-4 mt-10 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
         <div className="flex justify-center mb-4">
           <img src={gifUrl} alt={name} 
             className="h-24 absolute top-4 left-1/2 transform -translate-x-1/2"
@@ -105,7 +107,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
       <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto w-3/4">
         <div>
           <div className={headerStyle}>Height</div>
-          <div className="block bg-white rounded-lg text-sm px-3 py-2.5 leading-none flex items-center 
+          <div className="block bg-slate-100 rounded-lg text-sm px-3 py-2.5 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${height / 10} m`}</div>
         </div>
         <div >
