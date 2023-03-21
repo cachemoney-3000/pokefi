@@ -1,4 +1,6 @@
 import React, { Component, Suspense, useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import "./App.css"
 import PokeCard from './components/PokeCard'
@@ -12,7 +14,7 @@ class App extends Component {
       pokemonDetails: [],
       offset: 0,
       loadNumber: 20,
-      loading: false,
+      loading: true,
       selectedPokemon: null,
       description: '',
       evolutionChain: [],
@@ -144,41 +146,45 @@ class App extends Component {
     };
 
     return (
-        <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
-          <div className="w-full lg:w-3/4 p-4 bg-black" style={{ overflowY: 'auto' }}>
-            <div className="fixed top-0 z-10 bg-black w-3/5 ml-auto mr-auto">
+      <div className='bg-[#2b292c] w-screen h-screen overflow-y-scroll'>
+        <div className="flex flex-wrap pb-4 md:pb-4 w-full">
+          <div className="sticky top-0 z-10 py-4 w-full bg-[#2b292c]">
+            <div className="w-3/5 mx-auto lg:ml-0 lg:mr-auto">
               <input 
                 type="text" 
                 placeholder="Search for a Pokemon..." 
                 value={searchTerm} 
                 onChange={(event) => this.setState({ searchTerm: event.target.value })} 
-                className="w-full px-4 py-2 rounded-lg border 
-                border-gray-400 focus:outline-none focus:border-blue-500 bg-white"
+                className="w-full px-4 py-3 rounded-xl border 
+                border-gray-400 focus:outline-none focus:border-blue-500 bg-[#2b292c] text-white"
               />
             </div>
+          </div>
 
+          <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
               {renderedPokemonList}
               <div id="intersection"></div>
             </div>
-
-            <div id="loading">{loading ? 'Loading...' : null}</div>
+        
+            <div id="loading" className="flex items-center justify-center h-20">{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : null}</div>
           </div>
+
           {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
-            <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
-              <React.Fragment>
-                <PokeInfo 
-                  pokemon={selectedPokemon} 
-                  description={description}
-                  evolutionChain={evolutionChain}
-                  onPokemonClick={handlePokemonClick}
-                />
-              </React.Fragment>
-            </div>
+          <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
+            <React.Fragment>
+              <PokeInfo 
+                pokemon={selectedPokemon} 
+                description={description}
+                evolutionChain={evolutionChain}
+                onPokemonClick={handlePokemonClick}
+              />
+            </React.Fragment>
+          </div>
           )}
         </div>
+      </div>
     );
-    
   }
 }
       
