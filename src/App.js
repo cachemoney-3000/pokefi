@@ -144,18 +144,29 @@ class App extends Component {
     };
 
     return (
-      <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
-        <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
-        <input type="text" placeholder="Search for a Pokemon..." value={searchTerm} onChange={(event) => this.setState({ searchTerm: event.target.value })} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
-            {renderedPokemonList}
-            <div id="intersection"></div>
+        <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
+          <div className="w-full lg:w-3/4 p-4 bg-black" style={{ overflowY: 'auto' }}>
+            <div className="fixed top-0 z-10 bg-black w-3/5 ml-auto mr-auto">
+              <input 
+                type="text" 
+                placeholder="Search for a Pokemon..." 
+                value={searchTerm} 
+                onChange={(event) => this.setState({ searchTerm: event.target.value })} 
+                className="w-full px-4 py-2 rounded-lg border 
+                border-gray-400 focus:outline-none focus:border-blue-500 bg-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
+              {renderedPokemonList}
+              <div id="intersection"></div>
+            </div>
+
+            <div id="loading">{loading ? 'Loading...' : null}</div>
           </div>
-          <div id="loading">{loading ? 'Loading...' : null}</div>
-        </div>
-        {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
-          <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
-            <React.Fragment>
+          {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
+            <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
+              <React.Fragment>
                 <PokeInfo 
                   pokemon={selectedPokemon} 
                   description={description}
@@ -163,10 +174,11 @@ class App extends Component {
                   onPokemonClick={handlePokemonClick}
                 />
               </React.Fragment>
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
     );
+    
   }
 }
       
