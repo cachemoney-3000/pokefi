@@ -8,7 +8,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      pokemons: [],
+      pokemons: [], // add an empty array to hold the pokemon
       pokemonDetails: [],
       offset: 0,
       loadNumber: 20,
@@ -23,7 +23,7 @@ class App extends Component {
   }
 
   getNextOffset() {
-    return this.state.offset+this.state.loadNumber;
+    return this.state.offset + this.state.loadNumber;
   }
 
   handleIntersection(entries) {
@@ -34,6 +34,21 @@ class App extends Component {
       });
     }
   }
+
+getMorePokemon = async () => {
+    const { pokemons, offset, loadNumber } = this.state;
+    const pokemonDetailsPromises = [];
+    const newPokemons = pokemons.slice(offset, offset + loadNumber);
+    for (let i = 0; i < newPokemons.length; i++) {
+      const pokemon = newPokemons[i];
+      const response = await fetch(pokemon.url);
+      pokemonDetailsPromises.push(response.json());
+    }
+    const newPokemonDetails = await Promise.all(pokemonDetailsPromises);
+    this.setState({pokemonDetails: [...this.state.pokemonDetails, ...newPokemonDetails], loading: false});
+  }
+
+  
 
   async getDescription(pokemon) {
     const speciesUrl = pokemon.species.url;
@@ -65,43 +80,30 @@ class App extends Component {
     }
   }
   
-  componentDidMount() {
-    this.getMorePokemon();
-    this.observer = new IntersectionObserver(this.handleIntersection, {rootMargin: '0px', threshold: 1});
-    this.observer.observe(document.querySelector('#intersection'));
+  async componentDidMount() {
+    try {
+      const allPokemonResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1118');
+      const allPokemonData = await allPokemonResponse.json();
+  
+      const allPokemonDetailsPromises = allPokemonData.results.map(async (pokemon) => {
+        const pokemonResponse = await fetch(pokemon.url);
+        return pokemonResponse.json();
+      });
+  
+      const allPokemonDetails = await Promise.all(allPokemonDetailsPromises);
+  
+      this.setState({ 
+        pokemons: allPokemonData.results,
+        pokemonDetails: allPokemonDetails,
+        loading: false
+      });
+  
+    } catch (error) {
+      console.log(error);
+    }
   }
+  
 
-  getMorePokemon() {
-    let url = "https://pokeapi.co/api/v2/pokemon?offset=" + this.state.offset + "&limit=" + this.state.loadNumber;
-    fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      if (data) {
-        const { pokemons } = this.state;
-        this.setState({pokemons : [...pokemons, ...data.results]}) // combine new and existing pokemons
-        
-        data.results.forEach(pokemon => {
-          fetch(pokemon.url)
-          .then(response => response.json())
-          .then(data => {
-            if (data) {
-              var temp = this.state.pokemonDetails
-              temp.push(data)
-              this.setState({pokemonDetails: temp}) // update pokemon details
-                
-              // check if all pokemon details are fetched
-              if (temp.length === pokemons.length + (data.results ? data.results.indexOf(pokemon) : 0) + 1) {
-                this.setState({ loading: false }); // set loading to false
-              }
-
-            }            
-          })
-          .catch(console.log)
-        })
-      }
-    })
-    .catch(console.log)
-  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.selectedPokemon !== this.state.selectedPokemon) {
@@ -116,23 +118,35 @@ class App extends Component {
       }
     }
   }
-  
+
+
   render() {
-    const { pokemonDetails, loading, selectedPokemon, description, evolutionChain } = this.state;
-    const renderedPokemonList = pokemonDetails.map((pokemon) => (
-      <PokeCard 
-        pokemon={pokemon} 
-        onClick={() => this.selectPokemon(pokemon)}
-      />
-    ));
+    const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, searchTerm } = this.state;
+    const renderedPokemonList = [];
+    const renderedPokemonIds = [];
     
+    pokemonDetails
+      .filter((pokemon) => pokemon.name.includes(this.state.searchTerm.toLowerCase()))
+      .slice(0, this.state.offset + this.state.loadNumber)
+      .forEach((pokemon) => {
+        if (!renderedPokemonIds.includes(pokemon.id)) {
+          renderedPokemonList.push(
+            <PokeCard 
+              pokemon={pokemon} 
+              onClick={() => this.selectPokemon(pokemon)}
+            />
+          );
+          renderedPokemonIds.push(pokemon.id);
+        }
+      });
+
     const handlePokemonClick = async (pokemon) => {
       console.log(`You clicked on ${pokemon}!`);
-    
+
       // Make API call using the name to get full Pokemon information
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
       const data = await response.json();
-    
+
       // Pass result to selectPokemon function
       this.selectPokemon(data);
     };
@@ -140,13 +154,14 @@ class App extends Component {
     return (
       <div className="flex flex-wrap lg:px-10 pb-20 md:pb-32 lg:pt-5 pt-3">
         <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
+        <input type="text" placeholder="Search for a Pokemon..." value={searchTerm} onChange={(event) => this.setState({ searchTerm: event.target.value })} />
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
             {renderedPokemonList}
             <div id="intersection"></div>
           </div>
           <div id="loading">{loading ? 'Loading...' : null}</div>
         </div>
-        {selectedPokemon  && evolutionChain && Object.keys(evolutionChain).length > 0 && (
+        {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
           <div className="w-58 h-screen lg:w-1/4 p-4 sticky top-0 overflow-y-hidden">
             <React.Fragment>
                 <PokeInfo 
