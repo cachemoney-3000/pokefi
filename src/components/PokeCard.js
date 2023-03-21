@@ -7,7 +7,7 @@ const PokeCard = ({ pokemon, onClick }) => {
   const id = pokemon.id;
   const name = pokemon.name;
   const types = pokemon.types || [];
-  const hp = pokemon.stats.find(stat => stat.stat.name === "hp").base_stat;
+  const nameRevise = name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
 
@@ -103,7 +103,7 @@ return (
       <div className="flex justify-between">
         <div>
           <div className="font-light text-sm">No. {pokemon.id}</div>
-          <div className="font-medium text-xl mb-2">{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+          <div className="font-medium text-xl mb-2">{nameRevise}</div>
           <div className="flex gap-2">{typeSpans}</div>
         </div>
         <div className="bg-slate-100 flex justify-center items-center rounded-full px-2" style={{ aspectRatio: '1/1', height: '25%', width: '25%' }}>

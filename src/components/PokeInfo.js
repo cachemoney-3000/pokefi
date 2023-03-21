@@ -5,7 +5,10 @@ import './PokeInfo.css';
 const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   const { id, name, types, height, weight, abilities, stats } = pokemon;
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
-  console.log(evolutionChain)
+  const imgSrc = pokemon.sprites && pokemon.sprites['front_default'];
+  const noGif = id > 649;
+  const nameRevise = name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
   let bgColor = '';
   switch (types[0]?.type.name) {
     case 'normal':
@@ -95,12 +98,12 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   return (
     <div className="PokeInfo p-4 mt-10 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
         <div className="flex justify-center mb-4">
-          <img src={gifUrl} alt={name} 
+          <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
             className="h-24 absolute top-4 left-1/2 transform -translate-x-1/2"
             />
       </div>
       <div className="font-light text-sm">No. {pokemon.id}</div>
-      <div className="font-medium text-2xl">{name.charAt(0).toUpperCase() + name.slice(1)}</div>
+      <div className="font-medium text-2xl">{nameRevise}</div>
       <div className="flex gap-2">{typeSpans}</div>
       <div className="text-base font-light mt-2 mb-2">{description}</div>
 
@@ -135,7 +138,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
             <div className="w-4/6">
               <div className="relative h-2 w-full bg-slate-100 bg-opacity-40 rounded-md overflow-hidden">
                 <div className="absolute h-full bg-slate-100" 
-                style={{ width: `${stat.base_stat}%` }} />
+                style={{ width: `${(stat.base_stat/1000) * 500}%` }} />
               </div>
             </div>
           </div>

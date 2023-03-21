@@ -28,28 +28,14 @@ class App extends Component {
 
   handleIntersection(entries) {
     if (entries[0].isIntersecting) {
-      const newOffset = this.getNextOffset();
-      this.setState({offset: newOffset, loading: true}, () => {
-        this.getMorePokemon();
-      });
+      console.log('intersecting')
+      this.setState(prevState => ({
+        offset: prevState.offset + prevState.loadNumber
+      }));
     }
-  }
-
-getMorePokemon = async () => {
-    const { pokemons, offset, loadNumber } = this.state;
-    const pokemonDetailsPromises = [];
-    const newPokemons = pokemons.slice(offset, offset + loadNumber);
-    for (let i = 0; i < newPokemons.length; i++) {
-      const pokemon = newPokemons[i];
-      const response = await fetch(pokemon.url);
-      pokemonDetailsPromises.push(response.json());
-    }
-    const newPokemonDetails = await Promise.all(pokemonDetailsPromises);
-    this.setState({pokemonDetails: [...this.state.pokemonDetails, ...newPokemonDetails], loading: false});
   }
 
   
-
   async getDescription(pokemon) {
     const speciesUrl = pokemon.species.url;
     const response = await fetch(speciesUrl);
@@ -72,7 +58,6 @@ getMorePokemon = async () => {
   
   // Selecting a Pokemon
   async selectPokemon(pokemon) {
-    console.log(pokemon)
     this.setState({ selectedPokemon: pokemon, loading: true });
     if (pokemon) {
       this.getDescription(pokemon);
@@ -85,12 +70,16 @@ getMorePokemon = async () => {
       const allPokemonResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1118');
       const allPokemonData = await allPokemonResponse.json();
   
-      const allPokemonDetailsPromises = allPokemonData.results.map(async (pokemon) => {
-        const pokemonResponse = await fetch(pokemon.url);
-        return pokemonResponse.json();
-      });
-  
-      const allPokemonDetails = await Promise.all(allPokemonDetailsPromises);
+      const allPokemonDetails = [];
+      for (let i = 0; i < allPokemonData.results.length; i += 50) {
+        const batchPokemonData = allPokemonData.results.slice(i, i + 50);
+        const batchPokemonDetailsPromises = batchPokemonData.map(async (pokemon) => {
+          const pokemonResponse = await fetch(pokemon.url);
+          return pokemonResponse.json();
+        });
+        const batchPokemonDetails = await Promise.all(batchPokemonDetailsPromises);
+        allPokemonDetails.push(...batchPokemonDetails);
+      }
   
       this.setState({ 
         pokemons: allPokemonData.results,
@@ -101,7 +90,11 @@ getMorePokemon = async () => {
     } catch (error) {
       console.log(error);
     }
+
+    this.observer = new IntersectionObserver(this.handleIntersection, {rootMargin: '0px', threshold: 1});
+    this.observer.observe(document.querySelector('#intersection'));
   }
+  
   
 
 
@@ -132,6 +125,7 @@ getMorePokemon = async () => {
         if (!renderedPokemonIds.includes(pokemon.id)) {
           renderedPokemonList.push(
             <PokeCard 
+              key={pokemon.id}
               pokemon={pokemon} 
               onClick={() => this.selectPokemon(pokemon)}
             />
@@ -141,8 +135,6 @@ getMorePokemon = async () => {
       });
 
     const handlePokemonClick = async (pokemon) => {
-      console.log(`You clicked on ${pokemon}!`);
-
       // Make API call using the name to get full Pokemon information
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
       const data = await response.json();
