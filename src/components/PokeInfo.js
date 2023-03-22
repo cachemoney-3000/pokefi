@@ -73,7 +73,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   const typeSpans = types.map((type, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg text-sm px-3 py-2 leading-none 
+      className="block bg-white rounded-lg text-sm px-3 py-1 leading-none 
         flex items-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -84,7 +84,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   const abilitiesSpans = abilities.map((ability, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg text-sm px-3 py-2.5 leading-none flex items-center 
+      className="block bg-white rounded-lg text-sm px-3 py-2 leading-none flex items-center 
       justify-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -93,7 +93,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
   ));
 
   const evoNameStyle = 'text-sm font-light mr-2 pb-1 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
-  const headerStyle = "font-medium text-base text-slate-50 text-opacity-80 mb-2 leading-none flex items-center justify-center mr-0"
+  const headerStyle = "font-medium text-base text-white mb-2 leading-none flex items-center justify-center mr-0"
   
   return (
     <div className="PokeInfo p-4 mt-10 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
@@ -101,35 +101,35 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
           <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
             className="h-24 absolute top-4 left-1/2 transform -translate-x-1/2"
             />
-      </div>
+        </div>
       <div className="font-light text-sm">No. {pokemon.id}</div>
-      <div className="font-medium text-2xl">{nameRevise}</div>
+      <div className="font-medium text-2xl mb-1">{nameRevise}</div>
       <div className="flex gap-2">{typeSpans}</div>
-      <div className="text-base font-light mt-2 mb-2">{description}</div>
+      <div className="text-sm font-light mt-2 mb-2">{description}</div>
 
       <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto w-3/4">
         <div>
           <div className={headerStyle}>Height</div>
-          <div className="block bg-slate-100 rounded-lg text-sm px-3 py-2.5 leading-none flex items-center 
+          <div className="block bg-slate-100 rounded-lg text-sm px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${height / 10} m`}</div>
         </div>
         <div >
           <div className={headerStyle}>Weight</div>
-          <div className="block bg-white rounded-lg text-sm px-3 py-2.5 leading-none flex items-center 
+          <div className="block bg-white rounded-lg text-sm px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${weight / 10} kg`}</div>
         </div>
       </div>
 
 
       <div className="grid grid-rows-2 gap-0.5 mb-2 mr-auto ml-auto w-3/4">
-        <div className="font-medium text-base text-slate-50 text-opacity-80 leading-none flex items-center 
+        <div className="font-medium text-base text-white leading-none flex items-center 
         justify-center -mb-2">Abilities</div>
         {abilitiesSpans}
       </div>
 
 
       <div className="mb-3">
-        <div className="font-semibold text-lg text-slate-50 text-opacity-80 leading-none mb-2">Stats</div>
+        <div className="font-semibold text-lg leading-none mb-2">Stats</div>
         {stats.map((stat, index) => (
           <div key={index} className="flex items-center mb-0.5 text-sm">
             <div className="w-1/6 font-light text-md">
@@ -146,8 +146,8 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
       </div>
       
       <div>
-        <div className="font-semibold text-lg text-slate-50 text-opacity-80 leading-none mb-2">Evolution Chain</div>
-        <div className="mb-3">
+        <div className="font-semibold text-lg leading-none mb-2">Evolution Chain</div>
+        <div className="">
           <div className="flex items-center">
             <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.species.name)}>
               <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.species.url.split('/')[6]}.png`} alt={evolutionChain.species.name} />
@@ -174,8 +174,6 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
           </div>
         </div>
       </div>
-      
-
     </div>
   );
 };
