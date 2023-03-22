@@ -1,13 +1,42 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import './PokeInfo.css';
 
 
-const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
+const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButtonClick }) => {
   const { id, name, types, height, weight, abilities, stats } = pokemon;
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
   const imgSrc = pokemon.sprites && pokemon.sprites['front_default'];
   const noGif = id > 649;
   const nameRevise = name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+  function getPokemonGenres(pokemonType) {
+    const genreMap = {
+      normal: "pop",
+      fire: "latin",
+      water: "edm",
+      electric: "dance",
+      grass: "indie",
+      ice: "chill",
+      fighting: "rock",
+      poison: "metal",
+      ground: "hip-hop",
+      flying: "r&b",
+      psychic: "soul",
+      bug: "reggae",
+      rock: "punk",
+      ghost: "classical",
+      dragon: "instrumental",
+      dark: "blues",
+      steel: "metalcore",
+      fairy: "folk",
+    };
+  
+    return genreMap[pokemonType] || "pop";
+  }
+  
+  function handleClick() {
+    onButtonClick(getPokemonGenres(types[0].type.name), nameRevise);
+  }
 
   let bgColor = '';
   switch (types[0]?.type.name) {
@@ -145,7 +174,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
         ))}
       </div>
       
-      <div>
+      <div className='mb-4'>
         <div className="font-semibold text-lg leading-none mb-2">Evolution Chain</div>
         <div className="">
           <div className="flex items-center">
@@ -173,6 +202,13 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick }) => {
             )}
           </div>
         </div>
+      </div>
+
+      <div class="text-center w-fit mr-auto ml-auto">
+        <button class="bg-[#1a1a1a] hover:bg-[#010101] font-bold py-2.5 px-4 rounded-full mx-auto w-full focus:outline-none" 
+        style={{ color: bgColor }} onClick={handleClick}>
+          View {nameRevise}'s Playlist
+        </button>
       </div>
     </div>
   );

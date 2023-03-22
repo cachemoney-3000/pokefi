@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import * as $ from "jquery";
+
 import PokeCard from '../components/PokeCard';
 import PokeInfo from '../components/PokeInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const MainPage = (props) => {
-  const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber } = props;
+  const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, generatePlaylistFromParams} = props;
   const [searchTerm, setSearchTerm] = useState('');
 
   const renderedPokemonList = [];
@@ -35,6 +37,10 @@ const MainPage = (props) => {
     // Pass result to selectPokemon function
     props.selectPokemon(data);
   };
+
+  function handleGeneratePlaylist(genres, name) {
+    generatePlaylistFromParams(genres, name);
+  }
 
   return (
     <div className="flex flex-wrap pb-4 md:pb-4 w-full">
@@ -68,6 +74,7 @@ const MainPage = (props) => {
               description={description}
               evolutionChain={evolutionChain}
               onPokemonClick={handlePokemonClick}
+              onButtonClick={handleGeneratePlaylist}
             />
           </React.Fragment>
         </div>
