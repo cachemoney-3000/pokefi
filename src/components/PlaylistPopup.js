@@ -68,7 +68,7 @@ function PlaylistPopup(props) {
             rel="noopener noreferrer"
             className="no-underline hover:no-underline"
           >
-            <div className="bg-slate-50 bg-opacity-20 hover:bg-opacity-40 text-slate-50 hover:text-sky-500 shadow-lg rounded-lg">
+            <div className="bg-slate-50 bg-opacity-20 hover:bg-opacity-40 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
               <div className="py-2 pl-3 overflow-hidden">
                 <h3 className="font-medium text-base">{displayedTrackString(track)}</h3>
                 <p className="font-semilight text-xs">

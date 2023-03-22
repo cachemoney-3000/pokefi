@@ -168,17 +168,38 @@ class App extends Component {
   
   async generatePlaylist(genres, name, id, imgSrc) {
     console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
+    const popularity = Math.floor(Math.random() * 7) * 10 + 40;
+
+    console.log(popularity)
+
+    // Generate a random letter or word to search for
+    const searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+    // Make a request to the /v1/search endpoint
+    const searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
+      headers: {
+        Authorization: `Bearer ${this.state.token}`,
+      },
+    });
+    const searchData = await searchResponse.json();
+
+    // Extract a random artist ID from the search results
+    const artistIds = searchData.artists.items.map((artist) => artist.id);
+    const randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
+
+
     // Make a call to generate a new playlist
     const data = await new Promise((resolve, reject) => {
       $.ajax({
-        url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
+        url: `https://api.spotify.com/v1/recommendations?`,
         type: "GET",
         beforeSend: (xhr) => {
           xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
         },
         data: {
-          seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
+          seed_genres: {genres},
+          seed_artists: randomArtistId,
           limit: 10,
+          target_popularity: popularity // set minimum popularity to 50 (out of 100)
         },
         success: (data) => {
           console.log(data);
