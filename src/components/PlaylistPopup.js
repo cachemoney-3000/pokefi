@@ -2,7 +2,7 @@ import React from 'react';
 import './PokeInfo.css';
 
 function PlaylistPopup(props) {
-  const { name, tracks, genres, onClose } = props;
+  const { name, tracks, genres, onClose, onCatch } = props;
 
   function getPokemonType(genre) {
     
@@ -30,8 +30,6 @@ function PlaylistPopup(props) {
     return typeMap[genre] || "normal";
   }
 
-
-
   function displayedArtistString (track) {
     let artistString = track.artists.map((artist) => artist.name).join(", ");
     let truncatedArtistString = artistString.substring(0, 50);
@@ -40,7 +38,6 @@ function PlaylistPopup(props) {
     } 
     return truncatedArtistString;
   }
-
   
   function displayedTrackString (track) {
     let truncatedTrackString = track.name.substring(0, 40);
@@ -50,14 +47,18 @@ function PlaylistPopup(props) {
     return truncatedTrackString;
   }
 
+  function handleCatch() {
+    props.onCatch();
+  }
 
   return (
     <div className="PokeInfo px-3 mt-20 rounded-lg w-full overflow-auto scrollbar-hide"
       style={{backgroundColor: getPokemonType(genres) }}>
       <div className='flex mb-2'>
         <h2 className="font-bold text-xl text-white">{name}</h2>
-        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101] text-white 
-          text-xs font-bold px-3 py-2 rounded-full ml-auto">Close</button>
+        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101]
+          text-xs font-bold px-3 py-2 rounded-full ml-auto"
+          style={{color: getPokemonType(genres) }}>Close</button>
       </div>
       <div className="grid gap-2 mb-3">
         {tracks.map((track) => (
@@ -68,7 +69,7 @@ function PlaylistPopup(props) {
             rel="noopener noreferrer"
             className="no-underline hover:no-underline"
           >
-            <div className="bg-slate-50 bg-opacity-20 hover:bg-opacity-40 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
+            <div className="bg-slate-200 bg-opacity-30 hover:bg-opacity-50 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
               <div className="py-2 pl-3 overflow-hidden">
                 <h3 className="font-medium text-base">{displayedTrackString(track)}</h3>
                 <p className="font-semilight text-xs">
@@ -79,8 +80,9 @@ function PlaylistPopup(props) {
         ))}
       </div>
       <div className='mb-3'>
-        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101] text-white 
-            text-sm font-bold px-3 py-2 rounded-full ml-auto">Catch {name}</button>
+        <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#010101] 
+            text-sm font-bold px-3 py-2 rounded-full ml-auto"
+            style={{color: getPokemonType(genres) }}>Catch {name}</button>
       </div>
     </div>
   );
