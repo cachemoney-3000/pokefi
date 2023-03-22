@@ -105,7 +105,6 @@ class App extends Component {
           selectedPokemon={selectedPokemon}
           description={description}
           evolutionChain={evolutionChain}
-          searchTerm={searchTerm}
           offset={offset}
           loadNumber={loadNumber}
           selectPokemon={(pokemon) => this.selectPokemon(pokemon)}
