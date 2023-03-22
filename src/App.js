@@ -159,7 +159,7 @@ class App extends Component {
   
   // Selecting a Pokemon
   async selectPokemon(pokemon) {
-    this.setState({ selectedPokemon: pokemon, loading: false });
+    this.setState({ selectedPokemon: pokemon, loading: false,  showPopup: false});
     if (pokemon) {
       this.getDescription(pokemon);
       await this.getEvolutionChain(pokemon);
@@ -287,7 +287,7 @@ class App extends Component {
         )}
 
         {this.state.showPopup && 
-          <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
+          <div className="right-6 w-58 h-full lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
             <PlaylistPopup 
               name={this.state.playlist.name}
               tracks={this.state.playlist.tracks}

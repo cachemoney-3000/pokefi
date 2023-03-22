@@ -1,22 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import './PokeInfo.css';
 
 function PlaylistPopup(props) {
   const { name, tracks, genres, onClose } = props;
-
-  const popupRef = useRef();
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        console.log("Click outside");
-        onClose();
-      }
-    }
-    window.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      window.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [popupRef, onClose]);
 
   function getPokemonType(genre) {
     
@@ -44,12 +30,36 @@ function PlaylistPopup(props) {
     return typeMap[genre] || "normal";
   }
 
+
+
+  function displayedArtistString (track) {
+    let artistString = track.artists.map((artist) => artist.name).join(", ");
+    let truncatedArtistString = artistString.substring(0, 50);
+    if (artistString.length > 50) {
+      truncatedArtistString = truncatedArtistString + "...";
+    } 
+    return truncatedArtistString;
+  }
+
   
+  function displayedTrackString (track) {
+    let truncatedTrackString = track.name.substring(0, 40);
+    if (track.name.length > 40) {
+      truncatedTrackString = truncatedTrackString + "...";
+    } 
+    return truncatedTrackString;
+  }
+
+
   return (
-    <div className="PokeInfo px-3 mt-20 rounded-lg text-white w-full overflow-hidden"
+    <div className="PokeInfo px-3 mt-20 rounded-lg w-full overflow-auto scrollbar-hide"
       style={{backgroundColor: getPokemonType(genres) }}>
-      <h2 className="font-semibold text-lg mb-1 text-center">{name}</h2>
-      <div className="grid gap-2">
+      <div className='flex mb-2'>
+        <h2 className="font-bold text-xl text-white">{name}</h2>
+        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101] text-white 
+          text-xs font-bold px-3 py-2 rounded-full ml-auto">Close</button>
+      </div>
+      <div className="grid gap-2 mb-3">
         {tracks.map((track) => (
           <a
             key={track.id}
@@ -58,18 +68,21 @@ function PlaylistPopup(props) {
             rel="noopener noreferrer"
             className="no-underline hover:no-underline"
           >
-            <div className="bg-black shadow-lg rounded-lg hover:bg-gray-700 w-full">
-              <div className="py-2 pl-3 overflow-hidden text-ellipsis">
-                <h3 className="font-medium text-base text-slate-50">{track.name}</h3>
-                <p className="text-gray-600 font-semilight text-sm">{track.artists.map((artist) => artist.name).join(", ")}</p>
+            <div className="bg-slate-50 bg-opacity-20 hover:bg-opacity-40 text-slate-50 hover:text-sky-500 shadow-lg rounded-lg">
+              <div className="py-2 pl-3 overflow-hidden">
+                <h3 className="font-medium text-base">{displayedTrackString(track)}</h3>
+                <p className="font-semilight text-xs">
+                  {displayedArtistString(track)}</p>
               </div>
             </div>
           </a>
         ))}
       </div>
-      <button onClick={onClose} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">Close</button>
+      <div className='mb-3'>
+        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101] text-white 
+            text-sm font-bold px-3 py-2 rounded-full ml-auto">Catch {name}</button>
+      </div>
     </div>
-
   );
 }
 
