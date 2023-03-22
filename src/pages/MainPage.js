@@ -44,14 +44,14 @@ const MainPage = (props) => {
 
   return (
     <div className="flex flex-wrap pb-4 md:pb-4 w-full">
-      <div className="sticky top-0 z-10 py-4 w-full bg-[#2b292c]">
+      <div className="sticky top-0 z-10 py-4 w-full bg-[#2b292c] shadow shadow-xs">
         <div className="w-3/5 mx-auto lg:ml-0 lg:mr-auto">
           <input 
             type="text" 
             placeholder="Search for a Pokemon..." 
             value={searchTerm} 
             onChange={(event) => setSearchTerm(event.target.value)} 
-            className="w-full px-4 py-3 rounded-xl border 
+            className="w-full px-4 py-2 rounded-xl border 
             border-gray-400 focus:outline-none focus:border-blue-500 bg-[#2b292c] text-white"
           />
         </div>

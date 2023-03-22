@@ -48,7 +48,7 @@ function PlaylistPopup(props) {
   }
 
   function handleCatch() {
-    props.onCatch();
+    onCatch();
   }
 
   return (
@@ -56,7 +56,7 @@ function PlaylistPopup(props) {
       style={{backgroundColor: getPokemonType(genres) }}>
       <div className='flex mb-2'>
         <h2 className="font-bold text-xl text-white">{name}</h2>
-        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#010101]
+        <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#484848]
           text-xs font-bold px-3 py-2 rounded-full ml-auto"
           style={{color: getPokemonType(genres) }}>Close</button>
       </div>
@@ -80,7 +80,7 @@ function PlaylistPopup(props) {
         ))}
       </div>
       <div className='mb-3'>
-        <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#010101] 
+        <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848] 
             text-sm font-bold px-3 py-2 rounded-full ml-auto"
             style={{color: getPokemonType(genres) }}>Catch {name}</button>
       </div>

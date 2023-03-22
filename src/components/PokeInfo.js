@@ -205,7 +205,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
       </div>
 
       <div class="text-center w-fit mr-auto ml-auto">
-        <button class="bg-[#1a1a1a] hover:bg-[#010101] font-bold py-2.5 px-4 rounded-full mx-auto w-full focus:outline-none" 
+        <button class="bg-[#1a1a1a] hover:bg-[#484848] font-bold py-2.5 px-4 rounded-full mx-auto w-full focus:outline-none" 
         style={{ color: bgColor }} onClick={handleClick}>
           View {nameRevise}'s Playlist
         </button>
