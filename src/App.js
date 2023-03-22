@@ -85,11 +85,16 @@ class App extends Component {
       // Set new token expiration time
       const newTokenExpirationTime = Date.now() + (data.expires_in * 1000);
       localStorage.setItem('spotifyTokenExpiration', newTokenExpirationTime);
+
+      // Store new refresh token in local storage
+      localStorage.setItem('spotifyRefreshToken', data.refresh_token);
+
     })
     .catch(error => {
       console.error('Error refreshing Spotify token:', error);
     });
   }
+
 
   
   async componentDidMount() {

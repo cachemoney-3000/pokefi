@@ -11,4 +11,10 @@ const hash = window.location.hash
   }, {});
 window.location.hash = "";
 
+// Store token expiration time in localStorage
+if (hash.expires_in) {
+  const tokenExpirationTime = Date.now() + (hash.expires_in * 1000);
+  localStorage.setItem('spotifyTokenExpiration', tokenExpirationTime);
+}
+
 export default hash;
