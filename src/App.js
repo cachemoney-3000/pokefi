@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import * as $ from "jquery";
-import { authEndpoint, clientId, redirectUri, scopes } from "./config";
+import { authEndpoint, clientId, clientSecret, redirectUri, scopes } from "./config";
 import hash from "./hash";
 
 import "./App.css"
@@ -46,8 +46,52 @@ class App extends Component {
       this.setState({
         token: _token,
       });
+  
+      // Set interval to check token's expiration time
+      setInterval(() => {
+        const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
+        if (tokenExpirationTime && Date.now() >= tokenExpirationTime) {
+          // Token has expired, refresh it
+          this.refreshSpotifyToken();
+        }
+      }, 60000); // Check token's expiration time every minute
     }
   }
+
+  refreshSpotifyToken() {
+    const refreshToken = localStorage.getItem('spotifyRefreshToken');
+    const client_Id = clientId;
+    const client_Secret = clientSecret;
+    const tokenEndpoint = 'https://accounts.spotify.com/api/token';
+  
+    fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${btoa(`${client_Id}:${client_Secret}`)}`
+      },
+      body: `grant_type=refresh_token&refresh_token=${refreshToken}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Update state with new access token
+      this.setState({
+        token: data.access_token,
+      });
+  
+      // Store new access token in local storage
+      localStorage.setItem('spotifyAccessToken', data.access_token);
+  
+      // Set new token expiration time
+      const newTokenExpirationTime = Date.now() + (data.expires_in * 1000);
+      localStorage.setItem('spotifyTokenExpiration', newTokenExpirationTime);
+    })
+    .catch(error => {
+      console.error('Error refreshing Spotify token:', error);
+    });
+  }
+
+  
   async componentDidMount() {
     this.setSpotifyToken()
 
@@ -122,8 +166,8 @@ class App extends Component {
     }
   }
   
-  async generatePlaylist(genres, name) {
-    console.log(genres + ' ' + name);
+  async generatePlaylist(genres, name, id, imgSrc) {
+    console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
     // Make a call to generate a new playlist
     const data = await new Promise((resolve, reject) => {
       $.ajax({
@@ -163,6 +207,7 @@ class App extends Component {
           description: "This playlist was created using PokeFi",
           external_urls: null,
           tracks: data.tracks,
+          genres: genres,
         },
         showPopup: true, // Set the value of showPopup to true
       },
@@ -214,21 +259,12 @@ class App extends Component {
   
 
   render() {
-    const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, playlist, token } = this.state;
+    const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber} = this.state;
 
     return (
       <div className='bg-[#2b292c] w-screen h-screen overflow-y-scroll'>
-        {!this.state.token && (
-          <a
-            className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
-            href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-              "%20"
-            )}&response_type=token&show_dialog=true`}
-          >
-            Login to Spotify
-          </a>
-        )}
-        <MainPage 
+        {this.state.token !== null ? (
+          <MainPage 
             pokemonDetails={pokemonDetails}
             loading={loading}
             selectedPokemon={selectedPokemon}
@@ -239,13 +275,27 @@ class App extends Component {
             selectPokemon={(pokemon) => this.selectPokemon(pokemon)}
             generatePlaylistFromParams={this.generatePlaylist}
           />
-          {this.state.showPopup && 
+        ) : (
+          <a
+            className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+              "%20"
+            )}&response_type=token&show_dialog=true`}
+          >
+            Login to Spotify
+          </a>
+        )}
+
+        {this.state.showPopup && 
+          <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
             <PlaylistPopup 
+              name={this.state.playlist.name}
               tracks={this.state.playlist.tracks}
-              artists={this.state.artists}
+              genres={this.state.playlist.genres}
               onClose={() => this.setState({ showPopup: false })}
             />
-          }
+          </div>
+        }
       </div>
     );
   }

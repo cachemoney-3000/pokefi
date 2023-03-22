@@ -35,7 +35,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   }
   
   function handleClick() {
-    onButtonClick(getPokemonGenres(types[0].type.name), nameRevise);
+    onButtonClick(getPokemonGenres(types[0].type.name), nameRevise, id, imgSrc);
   }
 
   let bgColor = '';
@@ -125,11 +125,11 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const headerStyle = "font-medium text-base text-white mb-2 leading-none flex items-center justify-center mr-0"
   
   return (
-    <div className="PokeInfo p-4 mt-10 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
+    <div className="PokeInfo p-4 mt-8 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
         <div className="flex justify-center mb-4">
           <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
-            className="h-24 absolute top-4 left-1/2 transform -translate-x-1/2"
-            />
+            className="h-24 absolute top-2 left-1/2 transform -translate-x-1/2 z-30"
+          />
         </div>
       <div className="font-light text-sm">No. {pokemon.id}</div>
       <div className="font-medium text-2xl mb-1">{nameRevise}</div>

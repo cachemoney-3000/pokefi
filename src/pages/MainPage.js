@@ -38,8 +38,8 @@ const MainPage = (props) => {
     props.selectPokemon(data);
   };
 
-  function handleGeneratePlaylist(genres, name) {
-    generatePlaylistFromParams(genres, name);
+  function handleGeneratePlaylist(genres, name, id, imgSrc) {
+    generatePlaylistFromParams(genres, name, id, imgSrc);
   }
 
   return (
@@ -67,7 +67,7 @@ const MainPage = (props) => {
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
-        <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
+        <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-10 overflow-y-hidden" style={{position: 'fixed'}}>
           <React.Fragment>
             <PokeInfo 
               pokemon={selectedPokemon} 
