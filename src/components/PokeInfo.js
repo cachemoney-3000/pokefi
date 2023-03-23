@@ -50,7 +50,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
       bgColor = '#6390F0';
       break;
     case 'electric':
-      bgColor = '#f2c20c';
+      bgColor = '#f2ab0c';
       break;
     case 'grass':
       bgColor = '#7AC74C';
@@ -121,9 +121,9 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
     </span>
   ));
 
-  const evoNameStyle = 'text-sm font-light mr-2 pb-1 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
+  const evoNameStyle = 'text-xs px-2 font-light mr-2 pb-2 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
   const headerStyle = "font-medium text-base text-white mb-2 leading-none flex items-center justify-center mr-0"
-  
+  const evolutionChainStyle = 'h-20 w-20'
   return (
     <div className="PokeInfo p-4 mt-8 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
         <div className="flex justify-center mb-4">
@@ -174,26 +174,29 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
         ))}
       </div>
       
-      <div className='mb-4'>
+      <div className='mb-3'>
         <div className="font-semibold text-lg leading-none mb-2">Evolution Chain</div>
         <div className="">
           <div className="flex items-center">
             <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.species.name)}>
-              <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.species.url.split('/')[6]}.png`} alt={evolutionChain.species.name} />
+              <img className={evolutionChainStyle}
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.species.url.split('/')[6]}.png`} alt={evolutionChain.species.name} />
               <div className='-mt-1'>{evolutionChain.species.name.charAt(0).toUpperCase() + evolutionChain.species.name.slice(1)}</div>
             </div>
             {evolutionChain.evolves_to.length > 0 && (
               <React.Fragment>
                 <div className="text-md font-bold mr-2">→</div>
                 <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.evolves_to[0].species.name)}>
-                  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.evolves_to[0].species.url.split('/')[6]}.png`} alt={evolutionChain.evolves_to[0].species.name} />
+                  <img className={evolutionChainStyle}
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.evolves_to[0].species.url.split('/')[6]}.png`} alt={evolutionChain.evolves_to[0].species.name} />
                   <div className='-mt-1'>{evolutionChain.evolves_to[0].species.name.charAt(0).toUpperCase() + evolutionChain.evolves_to[0].species.name.slice(1)}</div>
                 </div>
                 {evolutionChain.evolves_to[0].evolves_to.length > 0 && (
                   <React.Fragment>
                     <div className="text-md font-bold mr-2">→</div>
                     <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.evolves_to[0].evolves_to[0].species.name)}>
-                      <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.evolves_to[0].evolves_to[0].species.url.split('/')[6]}.png`} alt={evolutionChain.evolves_to[0].evolves_to[0].species.name} />
+                      <img className={evolutionChainStyle}
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evolutionChain.evolves_to[0].evolves_to[0].species.url.split('/')[6]}.png`} alt={evolutionChain.evolves_to[0].evolves_to[0].species.name} />
                       <div className='-mt-1'>{evolutionChain.evolves_to[0].evolves_to[0].species.name.charAt(0).toUpperCase() + evolutionChain.evolves_to[0].evolves_to[0].species.name.slice(1)}</div>
                     </div>
                   </React.Fragment>
@@ -205,7 +208,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
       </div>
 
       <div class="text-center w-fit mr-auto ml-auto">
-        <button class="bg-[#1a1a1a] hover:bg-[#484848] font-bold py-2.5 px-4 rounded-full mx-auto w-full focus:outline-none" 
+        <button class="bg-[#1a1a1a] hover:bg-[#484848] text-sm font-bold py-2.5 px-4 rounded-full mx-auto w-full focus:outline-none" 
         style={{ color: bgColor }} onClick={handleClick}>
           View {nameRevise}'s Playlist
         </button>

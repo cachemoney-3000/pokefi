@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import * as $ from "jquery";
-import { authEndpoint, clientId, clientSecret, redirectUri, scopes } from "./config";
+import { clientId, clientSecret } from "./config";
 import hash from "./hash";
 
 import "./App.css"
@@ -287,7 +287,7 @@ class App extends Component {
 
     return (
       <div className='bg-[#2b292c] w-screen h-screen overflow-y-scroll'>
-        {false ? (
+        {this.state.token !== null ? (
           <MainPage 
             pokemonDetails={pokemonDetails}
             loading={loading}
@@ -298,6 +298,7 @@ class App extends Component {
             loadNumber={loadNumber}
             selectPokemon={(pokemon) => this.selectPokemon(pokemon)}
             generatePlaylistFromParams={this.generatePlaylist}
+            handleLogout={() => this.setState({ token: null, showPopup: false })}
           />
         ) : (
           <LoginPage />

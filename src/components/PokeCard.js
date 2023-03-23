@@ -23,7 +23,7 @@ const PokeCard = ({ pokemon, onClick }) => {
       bgColor = '#6390F0';
       break;
     case 'electric':
-      bgColor = '#f2c20c';
+      bgColor = '#f2ab0c';
       break;
     case 'grass':
       bgColor = '#7AC74C';

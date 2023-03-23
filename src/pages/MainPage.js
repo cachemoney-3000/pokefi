@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as $ from "jquery";
+import Logo from "../imgs/logo.png"
 
 import PokeCard from '../components/PokeCard';
 import PokeInfo from '../components/PokeInfo';
@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const MainPage = (props) => {
-  const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, generatePlaylistFromParams} = props;
+  const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, generatePlaylistFromParams, handleLogout} = props;
   const [searchTerm, setSearchTerm] = useState('');
 
   const renderedPokemonList = [];
@@ -45,17 +45,21 @@ const MainPage = (props) => {
   return (
     <div className="flex flex-wrap pb-4 md:pb-4 w-full">
       <div className="sticky top-0 z-10 py-4 w-full bg-[#2b292c] shadow shadow-xs">
-        <div className="w-3/5 mx-auto lg:ml-0 lg:mr-auto">
+        <div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center">
+          <img src={Logo} class="lg:h-8 sm:h-4 md:h-6 ml-10" alt="logo"/>
           <input 
             type="text" 
             placeholder="Search for a Pokemon..." 
             value={searchTerm} 
             onChange={(event) => setSearchTerm(event.target.value)} 
-            className="w-full px-4 py-2 rounded-xl border 
+            className="w-3/5 px-4 py-2 rounded-xl border  mr-auto ml-auto
             border-gray-400 focus:outline-none focus:border-blue-500 bg-[#2b292c] text-white"
           />
+          <button className="mr-10 bg-red-600 text-slate-50 hover:text-slate-200 hover:bg-red-700  
+            font-semibold rounded-lg px-4 py-2" onClick={handleLogout}>Logout</button>
         </div>
       </div>
+
 
       <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
