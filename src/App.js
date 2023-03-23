@@ -6,6 +6,7 @@ import hash from "./hash";
 
 import "./App.css"
 import MainPage from './pages/MainPage'
+import LoginPage from './pages/LoginPage'
 import PlaylistPopup from './components/PlaylistPopup';
 
 class App extends Component {
@@ -40,7 +41,7 @@ class App extends Component {
   setSpotifyToken() {
     // Set token
     let _token = hash.access_token;
-    console.log(_token);
+    //console.log(_token);
     if (_token) {
       // Set token
       this.setState({
@@ -96,7 +97,6 @@ class App extends Component {
   }
 
 
-  
   async componentDidMount() {
     this.setSpotifyToken()
 
@@ -135,7 +135,7 @@ class App extends Component {
 
   handleIntersection(entries) {
     if (entries[0].isIntersecting) {
-      console.log('intersecting')
+      //console.log('intersecting')
       this.setState(prevState => ({
         offset: prevState.offset + prevState.loadNumber
       }));
@@ -172,10 +172,10 @@ class App extends Component {
   }
   
   async generatePlaylist(genres, name, id, imgSrc) {
-    console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
+    //console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
     let popularity = Math.floor(Math.random() * 7) * 10 + 20;
 
-    console.log(popularity)
+    //console.log(popularity)
 
     // Generate a random letter or word to search for
     let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
@@ -238,16 +238,15 @@ class App extends Component {
         showPopup: true, // Set the value of showPopup to true
       },
       () => {
-        console.log(this.state.playlist);
+        //console.log(this.state.playlist);
       }
     );
   }
 
   
-  
   addPlaylistToAccount() {
-    console.log("addPlaylistToAccount")
-    console.log(this.state.playlist.tracks)
+    //console.log("addPlaylistToAccount")
+    //console.log(this.state.playlist.tracks)
     // Add the playlist to the user's account
     // Create a new playlist
     $.ajax({
@@ -282,17 +281,13 @@ class App extends Component {
     });
   }
 
-  catchPlaylist(){
-    console.log("addPlaylistToAccount")
-  }
-  
 
   render() {
     const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, token} = this.state;
 
     return (
       <div className='bg-[#2b292c] w-screen h-screen overflow-y-scroll'>
-        {this.state.token !== null ? (
+        {false ? (
           <MainPage 
             pokemonDetails={pokemonDetails}
             loading={loading}
@@ -305,14 +300,7 @@ class App extends Component {
             generatePlaylistFromParams={this.generatePlaylist}
           />
         ) : (
-          <a
-            className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
-            href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-              "%20"
-            )}&response_type=token&show_dialog=true`}
-          >
-            Login to Spotify
-          </a>
+          <LoginPage />
         )}
 
         {this.state.showPopup && 
