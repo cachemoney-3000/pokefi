@@ -44,9 +44,9 @@ const MainPage = (props) => {
 
   return (
     <div className="flex flex-wrap pb-4 md:pb-4 w-full">
-      <div className="sticky top-0 z-10 py-4 w-full bg-[#2b292c] shadow shadow-xs">
-        <div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center">
-          <img src={Logo} class="lg:h-8 sm:h-4 md:h-6 ml-10" alt="logo"/>
+      <div className="sticky top-0 z-10 xl:py-4 lg:py-4 w-full bg-[#2b292c] shadow shadow-xs">
+        <div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center xl:text-base lg:text-sm">
+          <img src={Logo} class="xl:h-8 lg:h-6 sm:h-4 md:h-6 ml-10" alt="logo"/>
           <input 
             type="text" 
             placeholder="Search for a Pokemon..." 
@@ -61,8 +61,8 @@ const MainPage = (props) => {
       </div>
 
 
-      <div className="w-full lg:w-3/4 p-4" style={{ overflowY: 'auto' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-auto ml-auto w-fit lg:gap-5 md:gap-4 sm:gap-3 gap-2 content-center">
+      <div className="w-full xl:w-3/4 lg:w-4/6 p-2" style={{ overflowY: 'auto' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4 lg:gap-2 mr-auto ml-auto w-fit content-center">
           {renderedPokemonList}
           <div id="intersection"></div>
         </div>
@@ -71,7 +71,8 @@ const MainPage = (props) => {
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
-        <div className="right-6 w-58 h-screen lg:w-1/4 p-4 sticky top-14 z-10 overflow-y-hidden" style={{position: 'fixed'}}>
+        <div className="xl:right-6 lg:right-0 xl:w-1/4 lg:w-5/12 h-screen xl:p-4 lg:p-10 sticky xl:top-14 lg:top-10 z-10 overflow-y-hidden" 
+            style={{position: 'fixed'}}>
           <React.Fragment>
             <PokeInfo 
               pokemon={selectedPokemon} 

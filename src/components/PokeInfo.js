@@ -125,14 +125,14 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const headerStyle = "font-medium text-base text-white mb-2 leading-none flex items-center justify-center mr-0"
   const evolutionChainStyle = 'h-20 w-20'
   return (
-    <div className="PokeInfo p-4 mt-8 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
-        <div className="flex justify-center mb-4">
+    <div className="PokeInfo p-4 xl:mt-8 lg:mt-6 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
+        <div className="flex justify-center xl:mb-4 lg:mb-1">
           <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
-            className="h-24 absolute top-2 left-1/2 transform -translate-x-1/2 z-30"
+            className="xl:h-24 lg:h-24 absolute xl:top-2 lg:top-6 left-1/2 transform -translate-x-1/2 z-50"
           />
         </div>
-      <div className="font-light text-sm">No. {pokemon.id}</div>
-      <div className="font-medium text-2xl mb-1">{nameRevise}</div>
+      <div className="font-light xl:text-sm lg:text-sm">No. {pokemon.id}</div>
+      <div className="font-medium xl:text-2xl lg:text-2xl mb-1">{nameRevise}</div>
       <div className="flex gap-2">{typeSpans}</div>
       <div className="text-sm font-light mt-2 mb-2">{description}</div>
 
@@ -158,7 +158,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 
 
       <div className="mb-3">
-        <div className="font-semibold text-lg leading-none mb-2">Stats</div>
+        <div className="font-medium text-base leading-none mb-2">Stats</div>
         {stats.map((stat, index) => (
           <div key={index} className="flex items-center mb-0.5 text-sm">
             <div className="w-1/6 font-light text-md">
@@ -175,7 +175,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
       </div>
       
       <div className='mb-3'>
-        <div className="font-semibold text-lg leading-none mb-2">Evolution Chain</div>
+        <div className="font-medium text-base  leading-none mb-2">Evolution Chain</div>
         <div className="">
           <div className="flex items-center">
             <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.species.name)}>

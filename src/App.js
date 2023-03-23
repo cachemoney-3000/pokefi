@@ -305,7 +305,7 @@ class App extends Component {
         )}
 
         {this.state.showPopup && 
-          <div className="right-6 w-58 h-full lg:w-1/4 p-4 sticky top-14 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
+          <div className="xl:right-6 lg:right-0 xl:w-1/4 lg:w-5/12 h-screen xl:p-4 lg:p-10 sticky xl:top-14 lg:top-10 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
             <PlaylistPopup 
               name={this.state.playlist.name}
               tracks={this.state.playlist.tracks}

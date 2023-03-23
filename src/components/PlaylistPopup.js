@@ -52,10 +52,10 @@ function PlaylistPopup(props) {
   }
 
   return (
-    <div className="PokeInfo px-3 mt-20 rounded-lg w-full overflow-auto scrollbar-hide"
+    <div className="PokeInfo xl:p-4 lg:p-4 xl:mt-8 lg:mt-10 rounded-lg text-white"
       style={{backgroundColor: getPokemonType(genres) }}>
-      <div className='flex mb-3'>
-        <h2 className="font-semibold text-xl text-white mt-2">{name}</h2>
+      <div className='flex xl:mb-3 lg:mb-2'>
+        <h2 className="font-semibold xl:text-xl lg:text-lg text-white xl:mt-2 lg:mt-1">{name}</h2>
         <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#484848]
           text-xs font-bold px-3 py-2 rounded-full ml-auto"
           style={{color: getPokemonType(genres) }}>Close</button>
@@ -71,7 +71,7 @@ function PlaylistPopup(props) {
           >
             <div className="bg-slate-200 bg-opacity-30 hover:bg-opacity-50 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
               <div className="py-2 pl-3 overflow-hidden">
-                <h3 className="font-medium text-base">{displayedTrackString(track)}</h3>
+                <h3 className="font-medium xl:text-base lg:text-sm">{displayedTrackString(track)}</h3>
                 <p className="font-semilight text-xs">
                   {displayedArtistString(track)}</p>
               </div>
@@ -79,9 +79,9 @@ function PlaylistPopup(props) {
           </a>
         ))}
       </div>
-      <div className='mb-3'>
+      <div className='xl:mb-3 lg:mb-2'>
         <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848] 
-            text-sm font-bold px-3 py-2 rounded-full ml-auto"
+            xl:text-sm lg:text-sm font-bold px-3 py-2 rounded-full ml-auto"
             style={{color: getPokemonType(genres) }}>Catch {name}</button>
       </div>
     </div>
