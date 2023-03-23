@@ -61,7 +61,7 @@ const MainPage = (props) => {
       </div>
 
 
-      <div className="w-full xl:w-3/4 lg:w-4/6 p-2" style={{ overflowY: 'auto' }}>
+      <div className="w-full xl:w-3/4 lg:w-4/6 xl:pt-8 lg:pt-4" style={{ overflowY: 'auto' }}>
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4 lg:gap-2 mr-auto ml-auto w-fit content-center">
           {renderedPokemonList}
           <div id="intersection"></div>
