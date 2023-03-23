@@ -102,7 +102,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const typeSpans = types.map((type, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg text-sm px-3 py-1 leading-none 
+      className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-1 leading-none 
         flex items-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -113,7 +113,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const abilitiesSpans = abilities.map((ability, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg text-sm px-3 py-2 leading-none flex items-center 
+      className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
       justify-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -121,49 +121,50 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
     </span>
   ));
 
-  const evoNameStyle = 'text-xs px-2 font-light mr-2 pb-2 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
-  const headerStyle = "font-medium text-base text-white mb-2 leading-none flex items-center justify-center mr-0"
-  const evolutionChainStyle = 'h-20 w-20'
+  const evoNameStyle = 'text-xs px-2 font-light mr-2 pb-2 lg:pt-2 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
+  const headerStyle = "font-medium 2xl:text-base text-sm text-white mb-2 leading-none flex items-center justify-center mr-0"
+  const evolutionChainStyle = '2xl:h-20 2xl:w-20 xl:h-20 xl:w-20 lg:h-0 lg:w-0'
+
   return (
-    <div className="PokeInfo p-4 xl:mt-8 lg:mt-6 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
-        <div className="flex justify-center xl:mb-4 lg:mb-1">
+    <div className="PokeInfo p-4 2xl:mt-12 xl:mt-6 lg:mt-6 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
+        <div className="flex justify-center 2xl:mb-4 lg:mb-1">
           <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
-            className="xl:h-24 lg:h-24 absolute xl:top-2 lg:top-6 left-1/2 transform -translate-x-1/2 z-50"
+            className="2xl:h-24 lg:h-24 absolute 2xl:top-2 lg:top-6 left-1/2 transform -translate-x-1/2 z-50"
           />
         </div>
-      <div className="font-light xl:text-sm lg:text-sm">No. {pokemon.id}</div>
-      <div className="font-medium xl:text-2xl lg:text-2xl mb-1">{nameRevise}</div>
+      <div className="font-light 2xl:text-sm lg:text-sm text-sm">No. {pokemon.id}</div>
+      <div className="font-medium 2xl:text-2xl text-xl mb-1">{nameRevise}</div>
       <div className="flex gap-2">{typeSpans}</div>
-      <div className="text-sm font-light mt-2 mb-2">{description}</div>
+      <div className="text-sm lg:text-xs font-light mt-2 mb-2">{description}</div>
 
-      <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto w-3/4">
+      <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto w-3/4 xl:w-2/44">
         <div>
           <div className={headerStyle}>Height</div>
-          <div className="block bg-slate-100 rounded-lg text-sm px-3 py-2 leading-none flex items-center 
+          <div className="block bg-slate-100 rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${height / 10} m`}</div>
         </div>
         <div >
           <div className={headerStyle}>Weight</div>
-          <div className="block bg-white rounded-lg text-sm px-3 py-2 leading-none flex items-center 
+          <div className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${weight / 10} kg`}</div>
         </div>
       </div>
 
 
-      <div className="grid grid-rows-2 gap-0.5 mb-2 mr-auto ml-auto w-3/4">
-        <div className="font-medium text-base text-white leading-none flex items-center 
+      <div className="grid grid-rows-2 gap-0.5 mb-2 mr-auto ml-auto w-3/4 xl:w-2/4">
+        <div className="font-medium 2xl:text-base text-sm text-white leading-none flex items-center 
         justify-center -mb-2">Abilities</div>
         {abilitiesSpans}
       </div>
 
 
       <div className="mb-3">
-        <div className="font-medium text-base leading-none mb-2">Stats</div>
+        <div className="font-medium 2xl:text-base text-sm leading-none mb-2">Stats</div>
         {stats.map((stat, index) => (
           <div key={index} className="flex items-center mb-0.5 text-sm">
             <div className="w-1/6 font-light text-md">
               {`${stat.stat.name === 'special-attack' ? 'Sp. Atk' : (stat.stat.name === 'special-defense' ? 'Sp. Def' : stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1))}`}</div>
-            <div className="w-1/6 flex justify-center text-md">{stat.base_stat}</div>
+            <div className="w-1/6 flex justify-center text-md lg:text-sm">{stat.base_stat}</div>
             <div className="w-4/6">
               <div className="relative h-2 w-full bg-slate-100 bg-opacity-40 rounded-md overflow-hidden">
                 <div className="absolute h-full bg-slate-100" 
@@ -174,7 +175,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
         ))}
       </div>
       
-      <div className='mb-3'>
+      <div className='2xl:mb-3 xl:mb-2 lg:mb-3'>
         <div className="font-medium text-base  leading-none mb-2">Evolution Chain</div>
         <div className="">
           <div className="flex items-center">

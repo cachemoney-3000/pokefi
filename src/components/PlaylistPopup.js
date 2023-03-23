@@ -31,17 +31,21 @@ function PlaylistPopup(props) {
   }
 
   function displayedArtistString (track) {
+    const maxWidth = window.innerWidth;
+    const maxChars = maxWidth <= 1024 ? 35 : 50;
     let artistString = track.artists.map((artist) => artist.name).join(", ");
-    let truncatedArtistString = artistString.substring(0, 50);
-    if (artistString.length > 50) {
+    let truncatedArtistString = artistString.substring(0, maxChars);
+    if (artistString.length > maxChars) {
       truncatedArtistString = truncatedArtistString + "...";
     } 
     return truncatedArtistString;
   }
   
   function displayedTrackString (track) {
-    let truncatedTrackString = track.name.substring(0, 40);
-    if (track.name.length > 40) {
+    const maxWidth = window.innerWidth;
+    const maxChars = maxWidth <= 1024 ? 30 : 50;
+    let truncatedTrackString = track.name.substring(0, maxChars);
+    if (track.name.length > maxChars) {
       truncatedTrackString = truncatedTrackString + "...";
     } 
     return truncatedTrackString;
@@ -52,10 +56,10 @@ function PlaylistPopup(props) {
   }
 
   return (
-    <div className="PokeInfo xl:p-4 lg:p-4 xl:mt-8 lg:mt-10 rounded-lg text-white"
+    <div className="PokeInfo 2xl:p-4 lg:p-4 2xl:mt-8 xl:mt-6 2xl:border-t-0 border-t-4 border-slate-900 border-opacity-30  lg:mt-10 rounded-lg text-white"
       style={{backgroundColor: getPokemonType(genres) }}>
-      <div className='flex xl:mb-3 lg:mb-2'>
-        <h2 className="font-semibold xl:text-xl lg:text-lg text-white xl:mt-2 lg:mt-1">{name}</h2>
+      <div className='flex 2xl:mb-3 lg:mb-2'>
+        <h2 className="font-semibold 2xl:text-2xl lg:text-lg text-white 2xl:mt-2 lg:mt-1">{name}</h2>
         <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#484848]
           text-xs font-bold px-3 py-2 rounded-full ml-auto"
           style={{color: getPokemonType(genres) }}>Close</button>
@@ -71,7 +75,7 @@ function PlaylistPopup(props) {
           >
             <div className="bg-slate-200 bg-opacity-30 hover:bg-opacity-50 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
               <div className="py-2 pl-3 overflow-hidden">
-                <h3 className="font-medium xl:text-base lg:text-sm">{displayedTrackString(track)}</h3>
+                <h3 className="font-medium 2xl:text-base lg:text-sm">{displayedTrackString(track)}</h3>
                 <p className="font-semilight text-xs">
                   {displayedArtistString(track)}</p>
               </div>
@@ -79,9 +83,9 @@ function PlaylistPopup(props) {
           </a>
         ))}
       </div>
-      <div className='xl:mb-3 lg:mb-2'>
+      <div className='2xl:mb-3 lg:mb-2'>
         <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848] 
-            xl:text-sm lg:text-sm font-bold px-3 py-2 rounded-full ml-auto"
+            2xl:text-sm lg:text-sm font-bold px-3 py-2 rounded-full ml-auto"
             style={{color: getPokemonType(genres) }}>Catch {name}</button>
       </div>
     </div>

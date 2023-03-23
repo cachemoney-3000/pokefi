@@ -85,7 +85,7 @@ const PokeCard = ({ pokemon, onClick }) => {
 
 return (
   <div
-    className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-52 lg:w-72 cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
+    className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-full lg:w-full xl:w-full 2xl:w-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
     style={{ backgroundColor: bgColor }}
     onClick={onClick}
     onMouseEnter={() => setIsHovered(true)}
@@ -102,9 +102,9 @@ return (
     <div className="relative text-white px-6 py-6 h-fit justify-center mb-2">
       <div className="flex justify-between">
         <div>
-          <div className="font-light text-sm">No. {pokemon.id}</div>
-          <div className="font-medium text-xl mb-2">{nameRevise}</div>
-          <div className="flex gap-2">{typeSpans}</div>
+          <div className="font-light 2xl:text-sm text-xs">No. {pokemon.id}</div>
+          <div className="font-medium 2xl:text-xl text-lg mb-2">{nameRevise}</div>
+          <div className="flex 2xl:gap-2 gap-1">{typeSpans}</div>
         </div>
         <div className="bg-slate-100 flex justify-center items-center rounded-full px-2" style={{ aspectRatio: '1/1', height: '25%', width: '25%' }}>
           <div className="font-medium text-xs mr-1" style={{ color: bgColor }}>HP</div>

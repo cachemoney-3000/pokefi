@@ -43,16 +43,16 @@ const MainPage = (props) => {
   }
 
   return (
-    <div className="flex flex-wrap pb-4 md:pb-4 w-full">
-      <div className="sticky top-0 z-10 xl:py-4 lg:py-4 w-full bg-[#2b292c] shadow shadow-xs">
-        <div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center xl:text-base lg:text-sm">
-          <img src={Logo} class="xl:h-8 lg:h-6 sm:h-4 md:h-6 ml-10" alt="logo"/>
+    <div className="flex flex-wrap md:block pb-4 md:pb-4 md:w-full">
+      <div className="sticky top-0 z-10 2xl:py-4 lg:py-4 w-full bg-[#2b292c] shadow shadow-xs">
+        <div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center 2xl:text-base lg:text-sm">
+          <img src={Logo} class="2xl:h-8 lg:h-6 sm:h-4 md:h-6 ml-10" alt="logo"/>
           <input 
             type="text" 
             placeholder="Search for a Pokemon..." 
             value={searchTerm} 
             onChange={(event) => setSearchTerm(event.target.value)} 
-            className="w-3/5 px-4 py-2 rounded-xl border  mr-auto ml-auto
+            className="w-3/5 px-4 py-2 rounded-2xl border  mr-auto ml-auto
             border-gray-400 focus:outline-none focus:border-blue-500 bg-[#2b292c] text-white"
           />
           <button className="mr-10 bg-red-600 text-slate-50 hover:text-slate-200 hover:bg-red-700  
@@ -61,8 +61,8 @@ const MainPage = (props) => {
       </div>
 
 
-      <div className="w-full xl:w-3/4 lg:w-4/6 xl:pt-8 lg:pt-4" style={{ overflowY: 'auto' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4 lg:gap-2 mr-auto ml-auto w-fit content-center">
+      <div className="w-full 2xl:w-3/4 lg:w-8/12 xl:w-3/5  md:w-full 2xl:pt-8 lg:pt-4 md:pt-5" style={{ overflowY: 'auto' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 xl:gap-3 2xl:gap-5 lg:gap-2 md:gap-1 2xl:mr-auto 2xl:ml-auto xl:mr-auto xl:ml-auto w-fit md:w-5/6 content-center">
           {renderedPokemonList}
           <div id="intersection"></div>
         </div>
@@ -71,7 +71,7 @@ const MainPage = (props) => {
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && (
-        <div className="xl:right-6 lg:right-0 xl:w-1/4 lg:w-5/12 h-screen xl:p-4 lg:p-10 sticky xl:top-14 lg:top-10 z-10 overflow-y-hidden" 
+        <div className="2xl:right-16 xl:right-0 lg:right-0 2xl:w-1/4 xl:w-5/12 lg:w-5/12 h-screen 2xl:p-4 lg:p-10 sticky 2xl:top-14 lg:top-10 z-10 overflow-y-hidden" 
             style={{position: 'fixed'}}>
           <React.Fragment>
             <PokeInfo 
@@ -83,6 +83,7 @@ const MainPage = (props) => {
             />
           </React.Fragment>
         </div>
+
       )}
     </div>
   );

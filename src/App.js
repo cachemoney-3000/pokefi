@@ -172,7 +172,7 @@ class App extends Component {
   }
   
   async generatePlaylist(genres, name, id, imgSrc) {
-    //console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
+    console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
     let popularity = Math.floor(Math.random() * 7) * 10 + 20;
 
     //console.log(popularity)
@@ -305,7 +305,7 @@ class App extends Component {
         )}
 
         {this.state.showPopup && 
-          <div className="xl:right-6 lg:right-0 xl:w-1/4 lg:w-5/12 h-screen xl:p-4 lg:p-10 sticky xl:top-14 lg:top-10 z-20 overflow-y-hidden" style={{position: 'fixed'}}>
+          <div className="2xl:right-16 xl:right-0 lg:right-0 2xl:w-1/4 lg:w-5/12 h-screen 2xl:p-4 lg:p-10 sticky 2xl:top-28 xl:top-14 lg:top-10 z-10 overflow-y-hidden" style={{position: 'fixed'}}>
             <PlaylistPopup 
               name={this.state.playlist.name}
               tracks={this.state.playlist.tracks}
