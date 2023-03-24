@@ -37,6 +37,7 @@ class App extends Component {
     this.generatePlaylist = this.generatePlaylist.bind(this);
     this.addPlaylistToAccount = this.addPlaylistToAccount.bind(this);
   }
+  
 
   setSpotifyToken() {
     // Set token

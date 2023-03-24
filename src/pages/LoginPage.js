@@ -1,6 +1,7 @@
 import React from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../config";
 import Logo from "../imgs/logo.png"
+import Main from "../imgs/playlistGenerated.png"
 
 const AUTH_URL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`;
 
@@ -39,7 +40,7 @@ function LoginPage() {
     </div>
 
     <div className="mt-6 flex-1 lg:mt-0 px-10">
-      <img src="https://images.unsplash.com/photo-1524749292158-7540c2494485?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=85" />
+      <img src={Main} alt="screenshot"/>
     </div>
     
   </div>

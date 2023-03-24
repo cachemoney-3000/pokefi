@@ -1,11 +1,5 @@
-export const authEndpoint = "https://accounts.spotify.com/authorize";
-
-// Replace with your app's client ID, redirect URI and desired scopes
-export const clientId = "d626a4a623d044a783c9300f1176ea68";
-export const clientSecret = "e9104d87fbbb484e80ee8c59e82e54ec";
-export const redirectUri = "http://localhost:3000/";
-export const scopes = [
-    "user-top-read",
-    "playlist-modify-public",
-    "playlist-modify-private",
-];
+export const authEndpoint = process.env.REACT_APP_AUTH_ENDPOINT;
+export const clientId = process.env.REACT_APP_CLIENT_ID;
+export const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
+export const redirectUri = process.env.REACT_APP_REDIRECT_URI;
+export const scopes = process.env.REACT_APP_SCOPES.split(',');
