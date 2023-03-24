@@ -132,7 +132,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 
   return (
     <div className="PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit md:h-full sm:h-full rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
-      <div className="flex justify-center 2xl:mb-4 xl:mb-1 lg:mb-1 md:mb-1 sm:mb-12">
+      <div className="flex justify-center 2xl:mb-4 xl:mb-1 lg:mb-1 md:mb-6 sm:mb-12">
         <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
           className="2xl:h-24 xl:h-24 lg:h-24 md:h-28 sm:h-24 absolute 2xl:top-2 xl:top-6 lg:top-6 md:top-4 sm:top-2 left-1/2 transform -translate-x-1/2 z-50"
         />

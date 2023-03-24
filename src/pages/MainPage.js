@@ -42,7 +42,7 @@ const MainPage = (props) => {
   };
 
   const handleInfoClose = () => {
-    console.log('handleInfoClose')
+    //console.log('handleInfoClose')
     setIsInfoOpen(false);
   };
 
@@ -81,9 +81,9 @@ const MainPage = (props) => {
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && isInfoOpen && (
-        <div className="2xl:right-16 xl:right-0 lg:-right-5 md:right-0 sm:right-0 inset-0 2xl:w-1/4 xl:w-5/12 lg:w-5/12 md:w-full md:h-full md:h-full sm:h-full 
-          md:mr-auto md:ml-auto mr-auto sticky z-10 overflow-y-auto
-          2xl:p-4 xl:p-10 lg:p-8 md:p-0 sm:p-0 2xl:top-14 xl:top-10 lg:top-10 md:top-0 sm:top-0" 
+        <div className="2xl:right-16 xl:right-0 lg:-right-5 md:right-0 sm:right-0 inset-0 2xl:w-1/4 xl:w-5/12 lg:w-5/12 md:w-full md:h-full 
+        md:mr-auto md:ml-auto 2xl:mr-0 xl:mr-0 lg:mr-0 sticky z-10 overflow-y-auto
+        2xl:p-4 xl:p-10 lg:p-8 md:p-0 sm:p-0 2xl:top-14 xl:top-10 lg:top-10 md:top-0 sm:top-0" 
             style={{position: 'fixed'}}>
           <React.Fragment>
             <PokeInfo 

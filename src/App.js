@@ -172,8 +172,8 @@ class App extends Component {
   }
   
   async generatePlaylist(genres, name, id, imgSrc) {
-    console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
-    let popularity = Math.floor(Math.random() * 7) * 10 + 20;
+    //console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
+    let popularity = Math.floor(Math.random() * 13) * 5 + 40;
 
     //console.log(popularity)
 
@@ -206,7 +206,7 @@ class App extends Component {
           target_popularity: popularity // set minimum popularity to 50 (out of 100)
         },
         success: (data) => {
-          console.log(data);
+          //console.log(data);
           resolve(data);
         },
         error: (error) => {
