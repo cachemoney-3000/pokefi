@@ -77,7 +77,9 @@ const MainPage = (props) => {
           <div id="intersection"></div>
         </div>
 
-        <div id="loading" className="flex items-center justify-center h-20">{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : null}</div>
+        <div id="loading" className="flex items-center justify-center overflow-hidden fixed top-0 left-0 w-full h-full">
+          {loading ? <FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: "white" }} /> : null}
+        </div>
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && isInfoOpen && (
