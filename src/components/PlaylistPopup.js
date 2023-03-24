@@ -58,7 +58,7 @@ function PlaylistPopup(props) {
   return (
     <div className="PokeInfo 2xl:p-4 xl:p-4 lg:p-4 md:p-12 sm:p-6 2xl:mt-24 xl:mt-6 lg:mt-6 md:mt-0 sm:mt-0 
       2xl:border-t-0 xl:border-t-4 lg:border-t-4 md:border-t-0 sm:border-t-0 border-slate-900 
-      border-opacity-30 rounded-lg text-white 2xl:h-fit xl:h-fit lg:h-fit md:h-fit sm:h-fit"
+      border-opacity-30 rounded-lg text-white 2xl:h-fit xl:h-fit lg:h-fit md:h-screen sm:h-screen overflow-y-auto"
       style={{backgroundColor: getPokemonType(genres) }}>
       <div className='flex 2xl:mb-3 xl:mb-2 lg:mb-2 md:mb-2 sm:mb-3'>
         <h2 className="font-semibold 2xl:text-2xl xl:text-xl lg:text-lg md:text-xl sm:text-lg text-white 2xl:mt-2 xl:mt-1 lg:mt-1 md:mt-1 sm:mt-1">{name}</h2>
