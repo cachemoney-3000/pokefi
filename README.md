@@ -1,5 +1,6 @@
 # Project Live Link
 https://pokefi.netlify.app/
+![playlistGenerated](https://user-images.githubusercontent.com/89613113/227578157-d298279a-347d-4542-82f0-02d7814bbc80.png)
 
 # Getting Started with Create React App
 
