@@ -85,7 +85,7 @@ const PokeCard = ({ pokemon, onClick }) => {
 
 return (
   <div
-    className="m-4 relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-32 md:w-full lg:w-full xl:w-full 2xl:w-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
+    className="2xl:m-auto xl:m-auto lg:m-auto md:m-auto sm:m-auto relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-full md:w-full lg:w-full xl:w-full 2xl:w-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
     style={{ backgroundColor: bgColor }}
     onClick={onClick}
     onMouseEnter={() => setIsHovered(true)}
