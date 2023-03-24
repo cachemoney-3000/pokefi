@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react';
 import './PokeInfo.css';
 
 
-const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButtonClick }) => {
+const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButtonClick, onInfoClose }) => {
   const { id, name, types, height, weight, abilities, stats } = pokemon;
   const gifUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`;
   const imgSrc = pokemon.sprites && pokemon.sprites['front_default'];
@@ -33,9 +33,14 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   
     return genreMap[pokemonType] || "pop";
   }
+
   
   function handleClick() {
     onButtonClick(getPokemonGenres(types[0].type.name), nameRevise, id, imgSrc);
+  }
+
+  function handleCatch() {
+    onInfoClose();
   }
 
   let bgColor = '';
@@ -102,7 +107,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const typeSpans = types.map((type, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-1 leading-none 
+      className="block bg-white rounded-lg 2xl:text-sm xl:text-xs lg:text-xs md:text-sm px-3 py-1 leading-none 
         flex items-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -113,7 +118,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   const abilitiesSpans = abilities.map((ability, index) => (
     <span
       key={index}
-      className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
+      className="block bg-white rounded-lg 2xl:text-sm xl:text-xs lg:text-xs md:text-xs px-3 py-2 leading-none flex items-center 
       justify-center mr-0 font-semibold"
       style={{ marginBottom: '5px', color: bgColor }}
     >
@@ -122,44 +127,51 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
   ));
 
   const evoNameStyle = 'text-xs px-2 font-light mr-2 pb-2 lg:pt-2 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer'
-  const headerStyle = "font-medium 2xl:text-base text-sm text-white mb-2 leading-none flex items-center justify-center mr-0"
-  const evolutionChainStyle = '2xl:h-20 2xl:w-20 xl:h-20 xl:w-20 lg:h-0 lg:w-0'
+  const headerStyle = "font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-sm text-white mb-2 leading-none flex items-center justify-center mr-0"
+  const evolutionChainStyle = '2xl:h-20 2xl:w-20 xl:h-20 xl:w-20 lg:h-0 lg:w-0 md:h-20 md:w-20'
 
   return (
-    <div className="PokeInfo p-4 2xl:mt-12 xl:mt-6 lg:mt-6 rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
-        <div className="flex justify-center 2xl:mb-4 lg:mb-1">
-          <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
-            className="2xl:h-24 lg:h-24 absolute 2xl:top-2 lg:top-6 left-1/2 transform -translate-x-1/2 z-50"
-          />
-        </div>
-      <div className="font-light 2xl:text-sm lg:text-sm text-sm">No. {pokemon.id}</div>
-      <div className="font-medium 2xl:text-2xl text-xl mb-1">{nameRevise}</div>
-      <div className="flex gap-2">{typeSpans}</div>
-      <div className="text-sm lg:text-xs font-light mt-2 mb-2">{description}</div>
+    <div className="PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 2xl:mt-12 xl:mt-6 lg:mt-6 md:mt-0 2xl:h-fit xl:h-fit lg:h-fit md:h-full rounded-lg shadow-lg text-white" style={{ backgroundColor: bgColor }}>
+      <div className="flex justify-center 2xl:mb-4 xl:mb-1 lg:mb-1 md:mb-1">
+        <img src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }} alt={name} 
+          className="2xl:h-24 xl:h-24 lg:h-24 md:h-28 absolute 2xl:top-2 xl:top-6 lg:top-6 md:top-4 left-1/2 transform -translate-x-1/2 z-50"
+        />
+      </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto w-3/4 xl:w-2/44">
+      <div className="font-light 2xl:text-sm xl:text-sm lg:text-sm md:text-md">No. {pokemon.id}</div>
+      <div className='flex'>
+        <div className="font-medium 2xl:text-2xl xl:text-xl lg:text-xl md:text-2xl mb-1">{nameRevise}</div>
+        <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848]
+            text-xs font-bold px-3 py-2 rounded-full ml-auto"
+            style={{color: bgColor }}>Close</button>
+      </div>
+    
+      <div className="flex gap-2">{typeSpans}</div>
+      <div className="2xl:text-sm xl:text-sm lg:text-xs md:text-sm font-light mt-2 2xl:mb-2 xl:mb-2 lg:mb-2 md:mb-3">{description}</div>
+
+      <div className="grid grid-cols-2 gap-3 mb-1 mr-auto ml-auto 2xl:w-3/4 xl:w-2/4 lg:w-full md:w-2/4">
         <div>
           <div className={headerStyle}>Height</div>
-          <div className="block bg-slate-100 rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
+          <div className="block bg-slate-100 rounded-lg 2xl:text-sm xl:text-xs lg:text-xs md:text-xs px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${height / 10} m`}</div>
         </div>
         <div >
           <div className={headerStyle}>Weight</div>
-          <div className="block bg-white rounded-lg 2xl:text-sm text-xs px-3 py-2 leading-none flex items-center 
+          <div className="block bg-white rounded-lg 2xl:text-sm xl:text-xs lg:text-xs md:text-xs px-3 py-2 leading-none flex items-center 
           justify-center mr-0 font-semibold" style={{ color: bgColor }}>{`${weight / 10} kg`}</div>
         </div>
       </div>
 
 
-      <div className="grid grid-rows-2 gap-0.5 mb-2 mr-auto ml-auto w-3/4 xl:w-2/4">
-        <div className="font-medium 2xl:text-base text-sm text-white leading-none flex items-center 
+      <div className="grid grid-rows-2 gap-0.5 mb-2 mr-auto ml-auto 2xl:w-3/4 xl:w-2/4 lg:w-full md:w-2/4">
+        <div className="font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-sm text-white leading-none flex items-center 
         justify-center -mb-2">Abilities</div>
         {abilitiesSpans}
       </div>
 
 
-      <div className="mb-3">
-        <div className="font-medium 2xl:text-base text-sm leading-none mb-2">Stats</div>
+      <div className="mb-3 2xl:w-full xl:w-full lg:w-full md:w-4/5 mr-auto ml-auto">
+        <div className="font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-sm leading-none mb-2">Stats</div>
         {stats.map((stat, index) => (
           <div key={index} className="flex items-center mb-0.5 text-sm">
             <div className="w-1/6 font-light text-md">
@@ -174,9 +186,9 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
           </div>
         ))}
       </div>
-      
-      <div className='2xl:mb-3 xl:mb-2 lg:mb-3'>
-        <div className="font-medium text-base  leading-none mb-2">Evolution Chain</div>
+    
+      <div className='2xl:mb-3 xl:mb-2 lg:mb-3 md:mb-4 2xl:w-full xl:w-full lg:w-full md:w-4/5 mr-auto ml-auto'>
+        <div className="font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-sm leading-none mb-2">Evolution Chain</div>
         <div className="">
           <div className="flex items-center">
             <div className={evoNameStyle} onClick={() => onPokemonClick(evolutionChain.species.name)}>

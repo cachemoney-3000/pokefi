@@ -56,10 +56,12 @@ function PlaylistPopup(props) {
   }
 
   return (
-    <div className="PokeInfo 2xl:p-4 lg:p-4 2xl:mt-8 xl:mt-6 2xl:border-t-0 border-t-4 border-slate-900 border-opacity-30  lg:mt-10 rounded-lg text-white"
+    <div className="PokeInfo 2xl:p-4 xl:p-4 lg:p-4 md:p-12 2xl:mt-24 xl:mt-6 lg:mt-6 md:mt-0 
+      2xl:border-t-0 xl:border-t-4 lg:border-t-4 md:border-t-0 border-slate-900 
+      border-opacity-30 rounded-lg text-white 2xl:h-fit xl:h-fit lg:h-fit md:h-full"
       style={{backgroundColor: getPokemonType(genres) }}>
-      <div className='flex 2xl:mb-3 lg:mb-2'>
-        <h2 className="font-semibold 2xl:text-2xl lg:text-lg text-white 2xl:mt-2 lg:mt-1">{name}</h2>
+      <div className='flex 2xl:mb-3 xl:mb-2 lg:mb-2 md:mb-2'>
+        <h2 className="font-semibold 2xl:text-2xl xl:text-xl lg:text-lg md:text-xl text-white 2xl:mt-2 xl:mt-1 lg:mt-1 md:mt-0">{name}</h2>
         <button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#484848]
           text-xs font-bold px-3 py-2 rounded-full ml-auto"
           style={{color: getPokemonType(genres) }}>Close</button>
@@ -75,7 +77,7 @@ function PlaylistPopup(props) {
           >
             <div className="bg-slate-200 bg-opacity-30 hover:bg-opacity-50 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
               <div className="py-2 pl-3 overflow-hidden">
-                <h3 className="font-medium 2xl:text-base lg:text-sm">{displayedTrackString(track)}</h3>
+                <h3 className="font-medium 2xl:text-md xl:text-sm lg:text-sm md:text-md">{displayedTrackString(track)}</h3>
                 <p className="font-semilight text-xs">
                   {displayedArtistString(track)}</p>
               </div>
@@ -83,9 +85,9 @@ function PlaylistPopup(props) {
           </a>
         ))}
       </div>
-      <div className='2xl:mb-3 lg:mb-2'>
+      <div className='2xl:mb-6 xl:mb-2 lg:mb-2 md:mb-3'>
         <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848] 
-            2xl:text-sm lg:text-sm font-bold px-3 py-2 rounded-full ml-auto"
+            2xl:text-sm xl:text-sm lg:text-sm md:text-md font-bold px-3 py-2 rounded-full ml-auto"
             style={{color: getPokemonType(genres) }}>Catch {name}</button>
       </div>
     </div>
