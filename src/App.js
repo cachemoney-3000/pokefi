@@ -175,7 +175,6 @@ class App extends Component {
   async generatePlaylist(genres, name, id, imgSrc) {
     //console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
     let popularity = Math.floor(Math.random() * 13) * 5 + 40;
-
     //console.log(popularity)
 
     // Generate a random letter or word to search for
@@ -191,7 +190,6 @@ class App extends Component {
     // Extract a random artist ID from the search results
     let artistIds = searchData.artists.items.map((artist) => artist.id);
     let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
-
 
     // Make a call to generate a new playlist
     const data = await new Promise((resolve, reject) => {
@@ -211,7 +209,11 @@ class App extends Component {
           resolve(data);
         },
         error: (error) => {
-          console.log(error);
+          if (error.status === 401) {
+            // Handle 401 error here
+            console.log('401 error: Unauthorized');
+            this.setState({ token: null, selectedPokemon: null, showPopup: false});
+          }
           reject(error);
         },
       });
