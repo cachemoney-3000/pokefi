@@ -289,7 +289,7 @@ class App extends Component {
     const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, token} = this.state;
 
     return (
-      <div className='bg-[#2b292c] w-screen h-screen overflow-y-scroll'>
+      <div className='bg-[#2b292c] w-screen h-full lg:pb-0 md:pb-0 sm:pb-8 overflow-y-scroll'>
         {this.state.token !== null ? (
           <MainPage 
             pokemonDetails={pokemonDetails}
