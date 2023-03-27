@@ -248,38 +248,76 @@ class App extends Component {
 
   
   addPlaylistToAccount() {
-    //console.log("addPlaylistToAccount")
-    //console.log(this.state.playlist.tracks)
-    // Add the playlist to the user's account
-    // Create a new playlist
+    // Fetch the user's playlists
     $.ajax({
       url: `https://api.spotify.com/v1/me/playlists`,
-      type: "POST",
+      type: "GET",
       beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+      xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
       },
-      contentType: "application/json",
-      data: JSON.stringify({
-        name: this.state.playlist.name,
-        description: this.state.playlist.description,
-      }),
-      success: (playlist) => {
-        // Add tracks to the playlist
-        $.ajax({
-          url: `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
-          type: "POST",
-          beforeSend: (xhr) => {
-            xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
-          },
-          contentType: "application/json",
-          data: JSON.stringify({
-            uris: this.state.playlist.tracks.map((track) => track.uri),
-          }),
-          success: () => {
-            // Redirect to the new playlist URL
-            window.open(playlist.external_urls.spotify, '_blank');
-          },
-        });
+      success: (playlistsResponse) => {
+        const playlists = playlistsResponse.items;
+        // Check if there is already a playlist with the same name
+        let existingPlaylist = null;
+        for (let i = 0; i < playlists.length; i++) {
+          if (playlists[i].name === this.state.playlist.name) {
+            existingPlaylist = playlists[i];
+            break;
+          }
+        }
+
+        if (existingPlaylist) {
+          // If there is an existing playlist with the same name, update it
+          $.ajax({
+            url: `https://api.spotify.com/v1/playlists/${existingPlaylist.id}/tracks`,
+            type: "PUT",
+            beforeSend: (xhr) => {
+              xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+            },
+            contentType: "application/json",
+            data: JSON.stringify({
+              uris: this.state.playlist.tracks.map((track) => track.uri),
+            }),
+            success: () => {
+              // Redirect to the updated playlist URL
+              window.open(existingPlaylist.external_urls.spotify, '_blank');
+            },
+          });
+        } 
+        
+        else {
+          // If there is no existing playlist with the same name, create a new one
+          $.ajax({
+            url: `https://api.spotify.com/v1/me/playlists`,
+            type: "POST",
+            beforeSend: (xhr) => {
+              xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+            },
+            contentType: "application/json",
+            data: JSON.stringify({
+              name: this.state.playlist.name,
+              description: this.state.playlist.description,
+            }),
+            success: (playlist) => {
+              // Add tracks to the playlist
+              $.ajax({
+                url: `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
+                type: "POST",
+                beforeSend: (xhr) => {
+                  xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+                },
+                contentType: "application/json",
+                data: JSON.stringify({
+                  uris: this.state.playlist.tracks.map((track) => track.uri),
+                }),
+                success: () => {
+                  // Redirect to the new playlist URL
+                  window.open(playlist.external_urls.spotify, '_blank');
+                },
+              });
+            },
+          });
+        }
       },
     });
   }
