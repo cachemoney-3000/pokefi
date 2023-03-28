@@ -1,8 +1,13 @@
 import React from 'react';
 import './PokeInfo.css';
+import SpotifyLogo from "../imgs/logo_icon.png"
+import SpotifyText from "../imgs/logo_text.png"
 
 function PlaylistPopup(props) {
   const { name, tracks, genres, onClose, onCatch } = props;
+  const screenWidth = window.innerWidth;
+  const isMediumScreenSize = screenWidth >= 1024 && screenWidth <= 1080;
+  console.log(screenWidth)
 
   function getPokemonType(genre) {
     
@@ -89,6 +94,11 @@ function PlaylistPopup(props) {
         <button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848] 
             2xl:text-sm xl:text-sm lg:text-sm md:text-md sm:text-md font-bold px-3 py-2 rounded-full ml-auto"
             style={{color: getPokemonType(genres) }}>Catch {name}</button>
+        {isMediumScreenSize ? (
+          <img src ={SpotifyLogo} alt="Spotify" className="float-right h-6 m-2" draggable="false"/>
+        ) : (
+          <img src ={SpotifyText} alt="Spotify" className="float-right h-6 m-2" draggable="false"/>
+        )}
       </div>
     </div>
   );
