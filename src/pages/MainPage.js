@@ -3,6 +3,7 @@ import Logo from "../imgs/logo.png"
 
 import PokeCard from '../components/PokeCard';
 import PokeInfo from '../components/PokeInfo';
+import pikachuLoadingImage from '../imgs/pikachu-running.gif';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
@@ -78,7 +79,7 @@ const MainPage = (props) => {
         </div>
 
         <div id="loading" className={`${loading ? 'flex' : 'hidden'} items-center justify-center overflow-auto fixed top-0 left-0 w-full h-full`}>
-          {loading ? <FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: "white" }} /> : null}
+          {loading ?  <img src={pikachuLoadingImage} alt="Loading..." style={{ height: '50px' }}/> : null}
         </div>
       </div>
 
