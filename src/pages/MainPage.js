@@ -5,7 +5,7 @@ import PokeCard from '../components/PokeCard';
 import PokeInfo from '../components/PokeInfo';
 import pikachuLoadingImage from '../imgs/pikachu-running.gif';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch  } from '@fortawesome/free-solid-svg-icons';
 
 const MainPage = (props) => {
   const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, generatePlaylistFromParams, handleLogout} = props;
@@ -78,9 +78,15 @@ const MainPage = (props) => {
           <div id="intersection"></div>
         </div>
 
-        <div id="loading" className={`${loading ? 'flex' : 'hidden'} items-center justify-center overflow-auto fixed top-0 left-0 w-full h-full`}>
-          {loading ?  <img src={pikachuLoadingImage} alt="Loading..." style={{ height: '50px' }}/> : null}
-        </div>
+        <div id="loading" className={`${loading ? 'flex flex-col items-center justify-center overflow-auto fixed top-0 left-0 w-full h-full' : 'hidden'}`}>
+          {loading ? 
+            <>
+              <img src={pikachuLoadingImage} alt="Loading..." style={{ height: '50px' }}/>
+              <FontAwesomeIcon icon={faCircleNotch } spin size="3x" style={{ color: "green" }} />
+            </>
+            : null}
+</div>
+
       </div>
 
       {selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && isInfoOpen && (
