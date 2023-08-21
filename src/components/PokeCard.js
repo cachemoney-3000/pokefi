@@ -85,13 +85,13 @@ const PokeCard = ({ pokemon, onClick }) => {
 
 return (
   <div
-    className="2xl:m-auto xl:m-auto lg:m-auto md:m-auto sm:m-auto relative rounded-lg max-w-xs shadow-lg h-fit w-20 sm:w-full md:w-full lg:w-full xl:w-full 2xl:w-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
-    style={{ backgroundColor: bgColor }}
+    className="2xl:m-auto xl:m-auto lg:m-auto md:m-auto sm:m-auto relative rounded-lg max-w-xs shadow-lg w-20 sm:w-full md:w-full lg:w-full xl:w-full 2xl:w-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
+    style={{ backgroundColor: bgColor, height: 'auto' }} // Set height to 'auto'
     onClick={onClick}
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
   >
-    <div className="relative h-fit pb-6 flex items-center justify-center">
+    <div className="relative  pb-6 flex items-center justify-center">
       <img
         className="absolute top-0 left-1/2 transform -translate-x-1/2"
         style={{ top: "-50px" }}
@@ -99,7 +99,7 @@ return (
         alt={pokemon.name}
       />
     </div>
-    <div className="relative text-white px-6 py-6 h-fit justify-center mb-2">
+    <div className="relative text-white px-6 py-6  justify-center mb-2">
       <div className="flex justify-between">
         <div>
           <div className="font-light 2xl:text-sm text-xs">No. {pokemon.id}</div>
