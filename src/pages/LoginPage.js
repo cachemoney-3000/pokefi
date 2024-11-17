@@ -7,7 +7,7 @@ const AUTH_URL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectU
 
 function LoginPage() {
 	return (
-		<div className="max-w-screen-2xl bg-[#2b292c] text-slate-50 h-full overflow-y-auto pb-20" style={{ height: '100vh', WebkitOverflowScrolling: 'touch' }}>
+		<div className="max-w-screen-2xl bg-[#2b292c] text-slate-50 h-full overflow-y-auto pb-10 scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
 			<header className="px-5 sm:py-5 md:py-5 lg:px-20 flex items-center justify-between">
 				<div>
 					<img src={Logo} className="lg:h-12 md:h-10 sm:h-8" alt="logo"/>

@@ -2,6 +2,7 @@ import './PokeInfo.css';
 import React from 'react';
 import SpotifyLogo from "../imgs/logo_icon.png"
 import SpotifyText from "../imgs/logo_text.png"
+import useIsIOS from '../hooks/UseIsIos';
 
 function PlaylistPopup(props) {
 	const { name, tracks, genres, onClose, onCatch } = props;
@@ -58,13 +59,15 @@ function PlaylistPopup(props) {
 		onCatch();
 	}
 
+	const isIOS = useIsIOS();
+
 	return (
 		<div
-			className="PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit md:h-screen sm:h-screen overflow-y-auto rounded-lg shadow-lg text-white"
+			className={`PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit
+				${isIOS ? 'md:h-full sm:h-full' : 'md:h-screen sm:h-screen'} overflow-y-auto overscroll-contain rounded-lg shadow-lg text-white`}
 			style={{
 				backgroundColor: getPokemonType(genres),
 				position: 'relative',
-				zIndex: '30',
 			}}
 		>
 			<div className='flex 2xl:mb-3 xl:mb-2 lg:mb-2 md:mb-2 sm:mb-3'>

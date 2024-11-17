@@ -44,6 +44,4 @@ html, body {
   font-family: 'Poppins', sans-serif;
   background-color: #2b292c;
   overflow-x: hidden;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
 }

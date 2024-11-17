@@ -55,7 +55,7 @@ class App extends Component {
 					// Token has expired, refresh it
 					this.refreshSpotifyToken();
 				}
-			}, 60000); // Check token's expiration time every minute
+			}, 60000);
 		}
 	}
 
@@ -96,7 +96,6 @@ class App extends Component {
 		});
 	}
 
-
 	async componentDidMount() {
 		this.setSpotifyToken()
 
@@ -124,11 +123,6 @@ class App extends Component {
 		} catch (error) {
 			console.log(error);
 		}
-
-		if (!this.state.loading) {
-			this.observer = new IntersectionObserver(this.handleIntersection, {rootMargin: '0px', threshold: 1});
-			this.observer.observe(document.querySelector('#intersection'));
-		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -138,7 +132,6 @@ class App extends Component {
 		}
 	}
 
-	// New method to initialize the observer
 	initializeObserver = () => {
 		const intersectionElement = document.querySelector('#intersection');
 		if (intersectionElement) {
@@ -193,9 +186,7 @@ class App extends Component {
 	}
 
 	async generatePlaylist(genres, name, id, imgSrc) {
-		//console.log(genres + ' ' + name + ' ' + id + ' ' + imgSrc);
 		let popularity = Math.floor(Math.random() * 13) * 5 + 40;
-		//console.log(popularity)
 
 		// Generate a random letter or word to search for
 		let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
@@ -222,10 +213,9 @@ class App extends Component {
 				data: {
 					seed_artists: randomArtistId,
 					limit: 10,
-					target_popularity: popularity // set minimum popularity to 50 (out of 100)
+					target_popularity: popularity
 				},
 				success: (data) => {
-					//console.log(data);
 					resolve(data);
 				},
 				error: (error) => {
@@ -259,13 +249,8 @@ class App extends Component {
 					added: false,
 				},
 				showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
-			},
-			() => {
-				//console.log(this.state.playlist);
-			}
-		);
+			});
 	}
-
 
 	addPlaylistToAccount() {
 		// Fetch the user's playlists
@@ -347,7 +332,7 @@ class App extends Component {
 		const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, token, showPlaylistPopup, playlist} = this.state;
 
 		return (
-			<div className='bg-[#2b292c]'>
+			<div className='bg-[#2b292c] h-dvh'>
 				{token !== null ? (
 					<MainPage
 						pokemonDetails={pokemonDetails}
@@ -366,7 +351,7 @@ class App extends Component {
 						onPlaylistCatch={this.addPlaylistToAccount}
 					/>
 				) : (
-				<div className='flex justify-center items-center'>
+				<div className='justify-center items-center'>
 					<LoginPage/>
 				</div>
 				)}

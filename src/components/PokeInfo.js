@@ -1,5 +1,6 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import './PokeInfo.css';
+import useIsIOS from '../hooks/UseIsIos';
 
 
 const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButtonClick, onInfoClose }) => {
@@ -131,9 +132,12 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 		);
 	}
 
+	const isIOS = useIsIOS();
+
 	return (
 		<div
-			className="PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit md:h-screen sm:h-screen overflow-y-auto rounded-lg shadow-lg text-white"
+			className={`PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit
+				${isIOS ? 'md:h-full sm:h-full' : 'md:h-screen sm:h-screen'} overflow-y-auto overscroll-contain rounded-lg shadow-lg text-white`}
 			style={{
 				backgroundColor: bgColor,
 				position: 'relative'
