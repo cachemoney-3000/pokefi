@@ -44,18 +44,19 @@ const MainPage = (props) => {
 
 	const handleGeneratePlaylist = (genres, name, id, imgSrc) => generatePlaylistFromParams(genres, name, id, imgSrc);
 
-	  // Disable scroll when the modal is open
-	  useEffect(() => {
+	// Disable scroll when the modal is open
+	useEffect(() => {
 		if (isInfoOpen) {
-		  document.body.style.overflow = 'hidden'; // Disable scroll
-		} else {
-		  document.body.style.overflow = 'auto'; // Restore scroll
+		    document.body.style.overflow = 'hidden'; // Disable scroll
+		}
+		else {
+		    document.body.style.overflow = 'auto'; // Restore scroll
 		}
 		// Clean up and restore scroll on unmount or when modal is closed
 		return () => {
-		  document.body.style.overflow = 'auto';
+		    document.body.style.overflow = 'auto';
 		};
-	  }, [isInfoOpen]);
+	}, [isInfoOpen]);
 
 	return (
 		<div id="mainPage" className="lg:pb-0 md:pb-0 sm:pb-8 flex flex-wrap md:block w-full justify-center">
