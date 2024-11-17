@@ -27,6 +27,7 @@ class App extends Component {
 			playlist: null,
 			no_data: false,
 			showPlaylistPopup: false,
+			observerInitialized: false
 		};
 		// Pokemon
 		this.handleIntersection = this.handleIntersection.bind(this);
@@ -127,8 +128,9 @@ class App extends Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		// Check if MainPage has just been loaded and observer hasn't been set yet
-		if (!this.state.loading) {
+		if (!this.state.loading && !this.state.observerInitialized) {
 			this.initializeObserver();
+			this.setState({ observerInitialized: true });
 		}
 	}
 
