@@ -7,7 +7,6 @@ import hash from "./hash";
 import "./App.css"
 import MainPage from './pages/MainPage'
 import LoginPage from './pages/LoginPage'
-import PlaylistPopup from './components/PlaylistPopup';
 
 class App extends Component {
 	constructor() {
@@ -17,7 +16,7 @@ class App extends Component {
 			pokemons: [],
 			pokemonDetails: [],
 			offset: 0,
-			loadNumber: 20,
+			loadNumber: 10,
 			loading: true,
 			selectedPokemon: null,
 			description: '',
@@ -126,11 +125,30 @@ class App extends Component {
 			console.log(error);
 		}
 
-		if (this.state.token !== null) {
+		if (!this.state.loading) {
 			this.observer = new IntersectionObserver(this.handleIntersection, {rootMargin: '0px', threshold: 1});
 			this.observer.observe(document.querySelector('#intersection'));
 		}
 	}
+
+	componentDidUpdate(prevProps, prevState) {
+		// Check if MainPage has just been loaded and observer hasn't been set yet
+		if (!this.state.loading && !prevState.loading) {
+			this.initializeObserver();
+		}
+	}
+
+	// New method to initialize the observer
+	initializeObserver = () => {
+		const intersectionElement = document.querySelector('#intersection');
+		if (intersectionElement) {
+			this.observer = new IntersectionObserver(this.handleIntersection, {
+				rootMargin: '0px',
+				threshold: 1
+			});
+			this.observer.observe(intersectionElement);
+		}
+	};
 
 	getNextOffset() {
 		return this.state.offset + this.state.loadNumber;

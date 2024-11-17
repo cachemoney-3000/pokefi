@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../index.css';
 
 const PokeCard = ({ pokemon, onClick }) => {
+	const [isHovered, setIsHovered] = useState(false);
 	const frontSprite = pokemon.sprites && pokemon.sprites['front_default'];
 	const name = pokemon.name;
 	const types = pokemon.types || [];

@@ -1,5 +1,5 @@
 // React & Hooks
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Component Imports
 import PokeCard from '../components/PokeCard';
@@ -22,14 +22,14 @@ const MainPage = (props) => {
 
 	const renderedPokemonList = filteredPokemonList.map(pokemon => (
 		<PokeCard
-	        key={pokemon.id}
-		    pokemon={pokemon}
-		    onClick={() => {
+			key={pokemon.id}
+			pokemon={pokemon}
+			onClick={() => {
 				props.selectPokemon(pokemon);
 				setIsInfoOpen(true);
-		    }}
+			}}
 		/>
-	  ));
+    ));
 
 
 	const handlePokemonClick = async (pokemon) => {
@@ -44,8 +44,21 @@ const MainPage = (props) => {
 
 	const handleGeneratePlaylist = (genres, name, id, imgSrc) => generatePlaylistFromParams(genres, name, id, imgSrc);
 
+	  // Disable scroll when the modal is open
+	  useEffect(() => {
+		if (isInfoOpen) {
+		  document.body.style.overflow = 'hidden'; // Disable scroll
+		} else {
+		  document.body.style.overflow = 'auto'; // Restore scroll
+		}
+		// Clean up and restore scroll on unmount or when modal is closed
+		return () => {
+		  document.body.style.overflow = 'auto';
+		};
+	  }, [isInfoOpen]);
+
 	return (
-		<div className="lg:pb-0 md:pb-0 sm:pb-8 flex flex-wrap md:block pb-4 w-full justify-center">
+		<div id="mainPage" className="lg:pb-0 md:pb-0 sm:pb-8 flex flex-wrap md:block w-full justify-center">
 			<div className="sticky top-0 z-10 2xl:py-4 xl:py-4 lg:py-4 md:py-3 sm:py-3 w-full shadow shadow-xs bg-[#2b292c]">
 				<div className="w-full mx-auto lg:ml-0 lg:mr-auto flex items-center 2xl:text-base xl:text-sm lg:text-sm md:text-sm sm:text-xs">
 					<img src={Logo} className="2xl:h-8 xl:h-6 lg:h-6 md:h-6 sm:h-4 md:ml-4 2xl:ml-10 xl:ml-10 lg:ml-10
@@ -67,16 +80,19 @@ const MainPage = (props) => {
 				</div>
 			</div>
 
-			<div className='max-w-screen-2xl mx-auto flex justify-center items-center relative'>
-				<div className="2xl:w-5/6 lg:w-4/6 xl:w-4/6 md:w-full sm:w-full 2xl:pt-14 xl:pt-14 xl:pt-14 lg:pt-14 md:pt-14 sm:pt-14" style={{ overflowY: 'auto' }}>
-					<div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 xl:gap-y-14 2xl:gap-8
+			<div className='max-w-screen-2xl mx-auto flex justify-center items-center w-full h-full'>
+				<div className="w-full pt-0 z-0"
+				>
+					<div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-4 xl:gap-y-14 2xl:gap-8
 						2xl:gap-y-14 lg:gap-6 lg:gap-y-14 md:gap-0 md:gap-y-14 sm:gap-14 mr-auto ml-auto
-						2xl:w-11/12 xl:w-full lg:w-10/12 md:w-full sm:w-full content-center">
+						w-full p-5 content-center overflow-y-auto relative"
+						style={{ height: '100vh', WebkitOverflowScrolling: 'touch' }}
+					>
 						{renderedPokemonList}
 						<div id="intersection"></div>
 					</div>
 
-					<div id="loading" className={`${loading ? 'flex flex-col items-center justify-center overflow-auto fixed top-0 left-0 w-full h-full' : 'hidden'}`}>
+					<div id="loading" className={`${loading ? 'flex flex-col items-center justify-center fixed top-0 left-0 w-full h-full' : 'hidden'}`}>
 						{loading && (
 							<div className="flex flex-col items-center justify-center fixed top-0 left-0 w-full h-full z-20">
 								<img src={pikachuLoadingImage} alt="Loading..." style={{ height: '50px' }}/>
@@ -86,6 +102,7 @@ const MainPage = (props) => {
 					</div>
 				</div>
 
+				{/** Modal */}
 				{selectedPokemon && evolutionChain && Object.keys(evolutionChain).length > 0 && isInfoOpen && (
 					<>
 						<div
@@ -93,9 +110,10 @@ const MainPage = (props) => {
 							style={{ backdropFilter: 'blur(10px)' }}
 						/>
 						<div
-							className="2xl:w-1/3 xl:w-5/12 lg:w-5/12 md:w-full md:h-full
-								2xl:p-4 xl:p-10 lg:p-8 md:p-0 sm:p-0 top-20 z-20
-								sticky"
+							className="2xl:w-8/12 xl:w-7/12 lg:w-6/12 md:w-full md:h-full
+								2xl:p-4 xl:p-10 lg:p-8 md:p-0 sm:p-0
+								2xl:top-20 xl:top-20 lg:top-20 md:top-0 sm:top-0
+								z-20 sticky"
 							style={{position: 'fixed'}}
 						>
 							<React.Fragment>
