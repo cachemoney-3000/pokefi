@@ -80,11 +80,11 @@ const MainPage = (props) => {
 				</div>
 			</div>
 
-			<div className='max-w-screen-2xl mx-auto flex justify-center items-center w-full h-full overflow-y-auto scroll-smooth'>
+			<div className='max-w-screen-2xl mx-auto flex justify-center items-center w-full h-full'>
 				<div className="w-full">
 					<div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-4 xl:gap-y-14 2xl:gap-8
 						2xl:gap-y-14 lg:gap-6 lg:gap-y-14 md:gap-0 md:gap-y-14 sm:gap-14 mr-auto ml-auto
-						w-full p-5 content-center"
+						w-full p-5 content-center overflow-y-auto"
 					>
 						{renderedPokemonList}
 						<div id="intersection"></div>

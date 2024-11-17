@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 import './PokeInfo.css';
 import useIsIOS from '../hooks/UseIsIos';
 
@@ -95,16 +95,26 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 	const headerStyle = "font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-md sm:text-md text-white mb-2 leading-none flex items-center justify-center mr-0";
 	const evolutionChainStyle = '2xl:h-20 2xl:w-20 xl:h-20 xl:w-20 lg:h-0 lg:w-0 md:h-20 md:w-20';
 
+	const modalRef = useRef(null);
+
 	function PokemonEvolution({ species, onPokemonClick }) {
 		return (
-		    <div className={evoNameStyle} onClick={() => onPokemonClick(species.name)}>
+			<div
+				className={evoNameStyle}
+				onClick={() => {
+					onPokemonClick(species.name);
+					if (modalRef.current) {
+						modalRef.current.scrollIntoView({ behavior: 'smooth' });
+					}
+			    }}
+			>
 				<img
 					className={evolutionChainStyle}
 					src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${species.url.split('/')[6]}.png`}
 					alt={species.name}
 				/>
 				<div className="-mt-1">{species.name.charAt(0).toUpperCase() + species.name.slice(1)}</div>
-		    </div>
+			</div>
 		);
 	}
 
@@ -141,10 +151,10 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 			style={{
 				backgroundColor: bgColor,
 				position: 'relative'
-		    }}
+			}}
 		>
 			{/** GIF */}
-			<div className="flex justify-center">
+			<div ref={modalRef} className="flex justify-center">
 				<img
 					src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }}
 					alt={name}

@@ -16,7 +16,7 @@ class App extends Component {
 			pokemons: [],
 			pokemonDetails: [],
 			offset: 0,
-			loadNumber: 10,
+			loadNumber: 20,
 			loading: true,
 			selectedPokemon: null,
 			description: '',
@@ -127,7 +127,7 @@ class App extends Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		// Check if MainPage has just been loaded and observer hasn't been set yet
-		if (!this.state.loading && !prevState.loading) {
+		if (!this.state.loading) {
 			this.initializeObserver();
 		}
 	}
@@ -149,7 +149,6 @@ class App extends Component {
 
 	handleIntersection(entries) {
 		if (entries[0].isIntersecting) {
-			//console.log('intersecting')
 			this.setState(prevState => ({
 				offset: prevState.offset + prevState.loadNumber
 			}));
@@ -186,70 +185,72 @@ class App extends Component {
 	}
 
 	async generatePlaylist(genres, name, id, imgSrc) {
-		let popularity = Math.floor(Math.random() * 13) * 5 + 40;
+		if (this.state.token !== null) {
+			let popularity = Math.floor(Math.random() * 13) * 5 + 40;
 
-		// Generate a random letter or word to search for
-		let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-		// Make a request to the /v1/search endpoint
-		let searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
-			headers: {
-				Authorization: `Bearer ${this.state.token}`,
-			},
-		});
-		let searchData = await searchResponse.json();
-
-		// Extract a random artist ID from the search results
-		let artistIds = searchData.artists.items.map((artist) => artist.id);
-		let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
-
-		// Make a call to generate a new playlist
-		const data = await new Promise((resolve, reject) => {
-			$.ajax({
-				url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
-				type: "GET",
-				beforeSend: (xhr) => {
-					xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
-				},
-				data: {
-					seed_artists: randomArtistId,
-					limit: 10,
-					target_popularity: popularity
-				},
-				success: (data) => {
-					resolve(data);
-				},
-				error: (error) => {
-					if (error.status === 401) {
-						// Handle 401 error here
-						console.log('401 error: Unauthorized');
-						this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false});
-					}
-					reject(error);
+			// Generate a random letter or word to search for
+			let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+			// Make a request to the /v1/search endpoint
+			let searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
+				headers: {
+					Authorization: `Bearer ${this.state.token}`,
 				},
 			});
-		});
+			let searchData = await searchResponse.json();
 
-		// Checks if the data is not empty
-		if (!data || !data.tracks) {
-			this.setState({
-				no_data: true,
+			// Extract a random artist ID from the search results
+			let artistIds = searchData.artists.items.map((artist) => artist.id);
+			let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
+
+			// Make a call to generate a new playlist
+			const data = await new Promise((resolve, reject) => {
+				$.ajax({
+					url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
+					type: "GET",
+					beforeSend: (xhr) => {
+						xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+					},
+					data: {
+						seed_artists: randomArtistId,
+						limit: 10,
+						target_popularity: popularity
+					},
+					success: (data) => {
+						resolve(data);
+					},
+					error: (error) => {
+						if (error.status === 401) {
+							// Handle 401 error here
+							console.log('401 error: Unauthorized');
+							this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false});
+						}
+						reject(error);
+					},
+				});
 			});
-			return;
+
+			// Checks if the data is not empty
+			if (!data || !data.tracks) {
+				this.setState({
+					no_data: true,
+				});
+				return;
+			}
+
+			this.setState(
+				{
+					playlist: {
+						id: null,
+						name: `${name}'s Playlist`,
+						description: "This playlist was created using PokeFi",
+						external_urls: null,
+						tracks: data.tracks,
+						genres: genres,
+						added: false,
+					},
+					showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
+				});
 		}
-
-		this.setState(
-			{
-				playlist: {
-					id: null,
-					name: `${name}'s Playlist`,
-					description: "This playlist was created using PokeFi",
-					external_urls: null,
-					tracks: data.tracks,
-					genres: genres,
-					added: false,
-				},
-				showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
-			});
 	}
 
 	addPlaylistToAccount() {
