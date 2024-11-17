@@ -132,7 +132,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 		return (
 			<div className="2xl:mb-3 xl:mb-2 lg:mb-3 md:mb-4 sm:mb-4 2xl:w-full xl:w-full lg:w-full md:w-4/5 sm:w-full mr-auto ml-auto">
 				<div className="font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-md sm:text-md leading-none mb-2">Evolution Chain</div>
-				<div className="">
+				<div className="overflow-x-auto scrollbar scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-white h-fit">
 					<div className="flex items-center">
 						<PokemonEvolution species={evolutionChain.species} onPokemonClick={onPokemonClick} />
 						{evolutionChain.evolves_to.length > 0 && renderEvolutions(evolutionChain.evolves_to)}
