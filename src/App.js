@@ -56,7 +56,7 @@ class App extends Component {
 					// Token has expired, refresh it
 					this.refreshSpotifyToken();
 				}
-			}, 60000);
+			}, 30000);
 		}
 	}
 
@@ -187,6 +187,23 @@ class App extends Component {
 	}
 
 	async generatePlaylist(genres, name, id, imgSrc) {
+		const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
+
+		// Check if the token is expired
+		if (!tokenExpirationTime || !(Date.now() >= tokenExpirationTime)) {
+			try {
+				// Confirm dialog with an OK option
+				if (window.confirm('Your session token has expired. Click OK to refresh the page and re-login.')) {
+					window.location.reload();
+				}
+				return;
+			} catch (error) {
+				console.error('Failed to refresh token:', error);
+				this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false });
+				return; // Exit the function if token refresh fails
+			}
+		}
+
 		if (this.state.token !== null) {
 			let popularity = Math.floor(Math.random() * 13) * 5 + 40;
 
