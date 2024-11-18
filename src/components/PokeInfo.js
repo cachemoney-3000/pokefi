@@ -91,7 +91,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 		</span>
 	));
 
-	const evoNameStyle = 'text-xs px-2 font-light mr-2 pb-2 lg:pt-2 flex items-center justify-center flex-col bg-slate-100 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer';
+	const evoNameStyle = 'text-xs px-2 font-normal mr-2 pb-2 lg:pt-2 flex items-center justify-center flex-col bg-slate-300 bg-opacity-30 hover:bg-opacity-50 rounded-2xl cursor-pointer';
 	const headerStyle = "font-medium 2xl:text-base xl:text-sm lg:text-sm md:text-md sm:text-md text-white mb-2 leading-none flex items-center justify-center mr-0";
 	const evolutionChainStyle = '2xl:h-20 2xl:w-20 xl:h-20 xl:w-20 lg:h-0 lg:w-0 md:h-20 md:w-20';
 
@@ -147,7 +147,8 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 	return (
 		<div
 			className={`PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 2xl:h-fit xl:h-fit lg:h-fit
-				${isIOS ? 'md:h-full sm:h-full' : 'md:h-screen sm:h-screen'} overflow-y-auto overscroll-contain rounded-lg shadow-lg text-white`}
+				${isIOS ? 'md:h-full sm:h-full' : 'md:h-screen sm:h-screen'} overflow-y-auto overscroll-contain rounded-lg shadow-lg text-white
+				max-w-screen-2xl 2xl:w-1/2`}
 			style={{
 				backgroundColor: bgColor,
 				position: 'relative'
@@ -158,7 +159,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 				<img
 					src={noGif ? imgSrc : gifUrl} onError={(e) => { e.target.onerror = null; e.target.src = imgSrc }}
 					alt={name}
-					className="2xl:h-24 xl:h-24 lg:h-24 md:h-28 sm:h-24"
+					className="2xl:h-24 xl:h-24 lg:h-24 md:h-28 sm:h-24 pokemon-gif"
 				/>
 			</div>
 

@@ -15,7 +15,7 @@ function LoginPage() {
 			</header>
 
 			<main>
-				<div id="hero" className="lg:flex justify-center items-center">
+				<div className="lg:flex justify-center items-center">
 					<div className="mt-6 flex-1 lg:px-14 md:px-10 sm:px-5">
 						<img
 							src={Main}

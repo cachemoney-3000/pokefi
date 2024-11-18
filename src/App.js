@@ -354,7 +354,7 @@ class App extends Component {
 						onPlaylistCatch={this.addPlaylistToAccount}
 					/>
 				) : (
-				<div className='justify-center items-center'>
+				<div className='flex justify-center items-center'>
 					<LoginPage/>
 				</div>
 				)}
