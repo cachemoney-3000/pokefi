@@ -190,7 +190,7 @@ class App extends Component {
 		const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
 
 		// Check if the token is expired
-		if (!tokenExpirationTime || !(Date.now() >= tokenExpirationTime)) {
+		if (!tokenExpirationTime || Date.now() >= tokenExpirationTime) {
 			try {
 				// Confirm dialog with an OK option
 				if (window.confirm('Your session token has expired. Click OK to refresh the page and re-login.')) {
