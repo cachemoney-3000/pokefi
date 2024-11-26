@@ -209,66 +209,76 @@ class App extends Component {
 
 			// Generate a random letter or word to search for
 			let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-			// Make a request to the /v1/search endpoint
-			let searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
-				headers: {
-					Authorization: `Bearer ${this.state.token}`,
-				},
-			});
-			let searchData = await searchResponse.json();
 
-			// Extract a random artist ID from the search results
-			let artistIds = searchData.artists.items.map((artist) => artist.id);
-			let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
-
-			// Make a call to generate a new playlist
-			const data = await new Promise((resolve, reject) => {
-				$.ajax({
-					url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
-					type: "GET",
-					beforeSend: (xhr) => {
-						xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
-					},
-					data: {
-						seed_artists: randomArtistId,
-						limit: 10,
-						target_popularity: popularity
-					},
-					success: (data) => {
-						resolve(data);
-					},
-					error: (error) => {
-						if (error.status === 401) {
-							// Handle 401 error here
-							console.log('401 error: Unauthorized');
-							this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false});
-						}
-						reject(error);
+			try {
+				// Make a request to the /v1/search endpoint
+				let searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
+					headers: {
+						Authorization: `Bearer ${this.state.token}`,
 					},
 				});
-			});
+				let searchData = await searchResponse.json();
 
-			// Checks if the data is not empty
-			if (!data || !data.tracks) {
-				this.setState({
-					no_data: true,
+				// Extract a random artist ID from the search results
+				let artistIds = searchData.artists.items.map((artist) => artist.id);
+				let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
+
+				// Make a call to generate a new playlist
+				const data = await new Promise((resolve, reject) => {
+					$.ajax({
+						url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
+						type: "GET",
+						beforeSend: (xhr) => {
+							xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+						},
+						data: {
+							seed_artists: randomArtistId,
+							limit: 10,
+							target_popularity: popularity
+						},
+						success: (data) => {
+							resolve(data);
+						},
+						error: (error) => {
+							if (error.status === 401) {
+								// Handle 401 error here
+								console.log('401 error: Unauthorized');
+								this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false});
+							}
+							reject(error);
+						},
+					});
 				});
-				return;
+
+				// Checks if the data is not empty
+				if (!data || !data.tracks) {
+					this.setState({
+						no_data: true,
+					});
+					return;
+				}
+
+				this.setState(
+					{
+						playlist: {
+							id: null,
+							name: `${name}'s Playlist`,
+							description: "This playlist was created using PokeFi",
+							external_urls: null,
+							tracks: data.tracks,
+							genres: genres,
+							added: false,
+						},
+						showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
+					}
+				);
+			} catch (error) {
+				console.error("Error during playlist generation:", error);
+				// Handle session expiration or other unexpected errors
+				if (window.confirm('An error occurred while generating the playlist. Your session may have expired. Click OK to refresh the page and re-login.')) {
+					window.location.reload();
+				}
 			}
-
-			this.setState(
-				{
-					playlist: {
-						id: null,
-						name: `${name}'s Playlist`,
-						description: "This playlist was created using PokeFi",
-						external_urls: null,
-						tracks: data.tracks,
-						genres: genres,
-						added: false,
-					},
-					showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
-				});
 		}
 	}
 
