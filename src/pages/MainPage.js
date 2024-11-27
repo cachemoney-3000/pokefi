@@ -114,6 +114,11 @@ const MainPage = (props) => {
 								2xl:p-4 xl:p-10 lg:p-8 md:p-0 sm:p-0
 								2xl:top-20 xl:top-20 lg:top-20 md:top-0 sm:top-0
 								z-30 sticky flex justify-center"
+							style={{
+								position: 'fixed',
+								top: '50%',
+								transform: 'translateY(-50%)'
+							  }}
 						>
 							<React.Fragment>
 								{showPlaylistPopup && playlist !== null ?
