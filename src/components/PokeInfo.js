@@ -145,7 +145,7 @@ const PokeInfo = ({ pokemon, description, evolutionChain, onPokemonClick, onButt
 		<div
 			className={`PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 0 2xl:h-fit xl:h-fit lg:h-fit
 				md:h-full sm:h-full overflow-y-auto runded-lg shadow-lg text-white
-				max-w-screen-2xl 2xl:w-1/2 xl:w-5/6 lg:w-5/6 md:w-full lg:max-h-[85vh]`}
+				max-w-screen-2xl 2xl:w-1/2 xl:w-5/6 lg:w-5/6 md:w-full sm:w-full lg:max-h-[85vh]`}
 			style={{
 				backgroundColor: bgColor,
 				position: 'relative'
