@@ -1,11 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { authEndpoint, clientId, redirectUri, scopes } from "../config";
+import { generateCodeVerifier, generateCodeChallenge } from "../utils/pkce";
 import Logo from "../imgs/logo.png"
 import Main from "../imgs/playlistGenerated.png"
 
-const AUTH_URL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`;
-
 function LoginPage() {
+	const [loginUrl, setLoginUrl] = useState("");
+
+	useEffect(() => {
+		const setupAuth = async () => {
+			// Generate PKCE challenge
+			const codeVerifier = generateCodeVerifier(128);
+			const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+			// Store code verifier in localStorage - we'll need it for token exchange
+			localStorage.setItem("code_verifier", codeVerifier);
+
+			// Construct authorization URL with PKCE
+			const authUrl = new URL(authEndpoint);
+			const params = {
+				client_id: clientId,
+				response_type: 'code',
+				redirect_uri: redirectUri,
+				code_challenge_method: 'S256',
+				code_challenge: codeChallenge,
+				scope: scopes.join(" ")
+			};
+
+			authUrl.search = new URLSearchParams(params).toString();
+			setLoginUrl(authUrl.toString());
+		};
+
+		setupAuth();
+	}, []);
+
 	return (
 		<div className="max-w-screen-2xl bg-[#2b292c] text-slate-50 h-full overflow-y-auto pb-10 scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
 			<header className="px-5 sm:py-5 md:py-5 lg:px-20 flex items-center justify-between">
@@ -37,7 +65,7 @@ function LoginPage() {
 						</div>
 
 						<div className="flex-1 pb-10">
-							<a href={AUTH_URL}>
+							<a href={loginUrl}>
 								<button className="transition-all duration-500 lg:mt-5 md:mt-5 sm:mt-4 w-full rounded-2xl font-black
 								tracking-wide lg:text-lg md:text-lg sm:text-sm px-5 lg:py-5 md:py-4 sm:py-4 focus:outline-none focus:shadow-outline bg-[#1ed760]
 								text-[#2b292c] hover:bg-[#18ac4d] hover:text-[#222123]">Login With Spotify</button>

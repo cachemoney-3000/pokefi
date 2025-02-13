@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import * as $ from "jquery";
-import { clientId, clientSecret } from "./config";
-import hash from "./hash";
+import { clientId } from "./config";
+import { exchangeCodeForToken } from "./utils/auth";
 
 import "./App.css"
 import MainPage from './pages/MainPage'
@@ -39,40 +39,70 @@ class App extends Component {
 	}
 
 
-	setSpotifyToken() {
-		// Set token
-		let _token = hash.access_token;
-		//console.log(_token);
-		if (_token) {
-			// Set token
-			this.setState({
-				token: _token,
-			});
+	async setSpotifyToken() {
+		// Check for authorization code in URL
+		const urlParams = new URLSearchParams(window.location.search);
+		const code = urlParams.get('code');
 
-			// Set interval to check token's expiration time
-			setInterval(() => {
-				const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
-				if (tokenExpirationTime && Date.now() >= tokenExpirationTime) {
-					// Token has expired, refresh it
-					this.refreshSpotifyToken();
-				}
-			}, 30000);
+		if (code) {
+			try {
+				// Exchange the code for tokens
+				const { access_token, refresh_token, expires_in } = await exchangeCodeForToken(code);
+
+				// Clear the code from URL
+				window.history.replaceState({}, document.title, "/");
+
+				// Set token in state
+				this.setState({
+					token: access_token
+				});
+
+				// Store tokens
+				localStorage.setItem('spotifyAccessToken', access_token);
+				localStorage.setItem('spotifyRefreshToken', refresh_token);
+
+				// Set token expiration
+				const expirationTime = Date.now() + (expires_in * 1000);
+				localStorage.setItem('spotifyTokenExpiration', expirationTime);
+
+				// Set interval to check token's expiration time
+				setInterval(() => {
+					const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
+					if (tokenExpirationTime && Date.now() >= tokenExpirationTime) {
+						this.refreshSpotifyToken();
+					}
+				}, 30000);
+			} catch (error) {
+				console.error('Error exchanging code for token:', error);
+				this.setState({ token: null });
+			}
+		} else {
+			// Check if we have a stored token
+			const storedToken = localStorage.getItem('spotifyAccessToken');
+			if (storedToken) {
+				this.setState({
+					token: storedToken
+				});
+			}
 		}
 	}
 
 	refreshSpotifyToken() {
 		const refreshToken = localStorage.getItem('spotifyRefreshToken');
 		const client_Id = clientId;
-		const client_Secret = clientSecret;
 		const tokenEndpoint = 'https://accounts.spotify.com/api/token';
+
+		const params = new URLSearchParams();
+		params.append('grant_type', 'refresh_token');
+		params.append('refresh_token', refreshToken);
+		params.append('client_id', client_Id);
 
 		fetch(tokenEndpoint, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				'Authorization': `Basic ${btoa(`${client_Id}:${client_Secret}`)}`
 			},
-			body: `grant_type=refresh_token&refresh_token=${refreshToken}`
+			body: params
 		})
 		.then(response => response.json())
 		.then(data => {
@@ -88,12 +118,15 @@ class App extends Component {
 			const newTokenExpirationTime = Date.now() + (data.expires_in * 1000);
 			localStorage.setItem('spotifyTokenExpiration', newTokenExpirationTime);
 
-			// Store new refresh token in local storage
-			localStorage.setItem('spotifyRefreshToken', data.refresh_token);
-
+			// Store new refresh token if provided
+			if (data.refresh_token) {
+				localStorage.setItem('spotifyRefreshToken', data.refresh_token);
+			}
 		})
 		.catch(error => {
 			console.error('Error refreshing Spotify token:', error);
+			// Handle error - maybe redirect to login
+			this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false });
 		});
 	}
 
