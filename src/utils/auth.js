@@ -14,8 +14,11 @@ async function exchangeCodeForToken(code) {
         body: params
     });
 
-    const { access_token, refresh_token, expires_in } = await result.json();
-    return { access_token, refresh_token, expires_in };
+    const data = await result.json();
+    if (!data.access_token) {
+        throw new Error(data.error_description || data.error || 'Token exchange failed');
+    }
+    return { access_token: data.access_token, refresh_token: data.refresh_token, expires_in: data.expires_in };
 }
 
-export { exchangeCodeForToken }; 
+export { exchangeCodeForToken };

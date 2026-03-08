@@ -10,6 +10,23 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* Remove all focus rings and tap highlights globally */
+*,
+*::before,
+*::after {
+	-webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+input:focus,
+input:focus-visible {
+	outline: none !important;
+	box-shadow: none;
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;

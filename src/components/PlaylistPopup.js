@@ -1,108 +1,115 @@
 import './PokeInfo.css';
 import React from 'react';
-import SpotifyLogo from "../imgs/logo_icon.png"
 import SpotifyText from "../imgs/logo_text.png"
+import {
+	GENRE_COLOR_MAP,
+	FALLBACK_ACCENT_COLOR,
+	COLOR_SURFACE,
+	COLOR_TEXT_DARK,
+	TABLET_BREAKPOINT_PX,
+	TRACK_NAME_MAX_CHARS_MOBILE,
+	TRACK_NAME_MAX_CHARS_DESKTOP,
+	ARTIST_MAX_CHARS_MOBILE,
+	ARTIST_MAX_CHARS_DESKTOP,
+	ARTIST_SEPARATOR,
+	ELLIPSIS,
+} from "../utils/constants";
 
-function PlaylistPopup(props) {
-	const { name, tracks, genres, onClose, onCatch } = props;
-	const screenWidth = window.innerWidth;
-	const isMediumScreenSize = screenWidth <= 1080;
+function PlaylistPopup({ name, tracks, genres, onClose, onCatch }) {
+	const accentColor = GENRE_COLOR_MAP[genres] || FALLBACK_ACCENT_COLOR;
+	const isMobile = window.innerWidth <= TABLET_BREAKPOINT_PX;
 
-	function getPokemonType(genre) {
-		const typeMap = {
-			pop: "#A8A77A",
-			latin: "#EE8130",
-			edm: "#6390F0",
-			dance: "#f2ab0c",
-			indie: "#7AC74C",
-			chill: "#96D9D6",
-			rock: "#C22E28",
-			metal: "#A33EA1",
-			"hip-hop": "#E2BF65",
-			"r&b": "#A98FF3",
-			soul: "#F95587",
-			reggae: "#A6B91A",
-			punk: "#B6A136",
-			classical: "#735797",
-			instrumental: "#6F35FC",
-			blues: "#705746",
-			metalcore: "#B7B7CE",
-			folk: "#D685AD",
-		};
-
-		return typeMap[genre] || "normal";
+	function displayedTrackString(track) {
+		const maxChars = isMobile ? TRACK_NAME_MAX_CHARS_MOBILE : TRACK_NAME_MAX_CHARS_DESKTOP;
+		return track.name.length > maxChars
+			? track.name.substring(0, maxChars) + ELLIPSIS
+			: track.name;
 	}
 
-	function displayedArtistString (track) {
-		const maxWidth = window.innerWidth;
-		const maxChars = maxWidth <= 1024 ? 35 : 50;
-		let artistString = track.artists.map((artist) => artist.name).join(", ");
-		let truncatedArtistString = artistString.substring(0, maxChars);
-		if (artistString.length > maxChars) {
-			truncatedArtistString = truncatedArtistString + "...";
-		}
-		return truncatedArtistString;
-	}
-
-	function displayedTrackString (track) {
-		const maxWidth = window.innerWidth;
-		const maxChars = maxWidth <= 1024 ? 30 : 50;
-		let truncatedTrackString = track.name.substring(0, maxChars);
-		if (track.name.length > maxChars) {
-			truncatedTrackString = truncatedTrackString + "...";
-		}
-		return truncatedTrackString;
-	}
-
-	function handleCatch() {
-		onCatch();
+	function displayedArtistString(track) {
+		const maxChars = isMobile ? ARTIST_MAX_CHARS_MOBILE : ARTIST_MAX_CHARS_DESKTOP;
+		const str = track.artists.map(a => a.name).join(ARTIST_SEPARATOR);
+		return str.length > maxChars ? str.substring(0, maxChars) + ELLIPSIS : str;
 	}
 
 	return (
 		<div
-			className={`PokeInfo 2xl:p-4 xl:p-6 lg:p-6 md:p-10 sm:p-5 2xl:mt-12 xl:mt-6 lg:mt-10 md:mt-0 sm:mt-0 0 2xl:h-fit xl:h-fit lg:h-fit
-				md:h-full sm:h-full overflow-y-auto runded-lg shadow-lg text-white
-				max-w-screen-2xl 2xl:w-1/2 xl:w-5/6 lg:w-5/6 md:w-full sm:w-full lg:max-h-[85vh]`}
+			className="PokeInfo w-full overflow-hidden flex flex-col rounded-2xl max-h-[85vh]"
 			style={{
-				backgroundColor: getPokemonType(genres),
-				position: 'relative',
+				backgroundColor: COLOR_SURFACE,
+				boxShadow: `0 0 0 1.5px ${accentColor}55, 0 20px 60px rgba(0,0,0,0.65)`,
 			}}
 		>
-			<div className='flex 2xl:mb-3 xl:mb-2 lg:mb-2 md:mb-2 sm:mb-3'>
-				<h2 className="font-semibold 2xl:text-2xl xl:text-xl lg:text-lg md:text-xl sm:text-lg text-white 2xl:mt-2 xl:mt-1 lg:mt-1 md:mt-1 sm:mt-1">{name}</h2>
-				<button onClick={onClose} className="bg-[#1a1a1a] hover:bg-[#484848]
-					text-xs font-bold px-3 py-2 rounded-full ml-auto"
-					style={{color: getPokemonType(genres) }}>Back</button>
-			</div>
-			<div className="grid gap-2 mb-3">
-				{tracks.map((track) => (
-					<a
-						key={track.id}
-						href={track.external_urls.spotify}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="no-underline hover:no-underline"
-					>
-						<div className="bg-slate-200 bg-opacity-30 hover:bg-opacity-50 text-slate-50 hover:text-[#1a1a1a] shadow-sm rounded-lg">
-							<div className="py-2 pl-3 overflow-auto">
-								<h3 className="font-medium 2xl:text-md xl:text-sm lg:text-sm md:text-md sm:text-md">{displayedTrackString(track)}</h3>
-								<p className="font-semilight text-xs">
-									{displayedArtistString(track)}</p>
-							</div>
-						</div>
-					</a>
-				))}
-			</div>
-			<div className='2xl:mb-6 xl:mb-2 lg:mb-2 md:mb-3 sm:mb-4'>
-				<button onClick={handleCatch} className="bg-[#1a1a1a] hover:bg-[#484848]
-						2xl:text-sm xl:text-sm lg:text-sm md:text-md sm:text-sm font-bold px-3 py-2 rounded-full ml-auto"
-						style={{color: getPokemonType(genres) }}>Catch {name}</button>
-				{isMediumScreenSize ? (
-					<img src ={SpotifyLogo} alt="Spotify" className="float-right h-6 m-2" draggable="false"/>
-				) : (
-					<img src ={SpotifyText} alt="Spotify" className="float-right h-6 m-2" draggable="false"/>
-				)}
-			</div>
+	{/* Header */}
+	<div className="flex items-center justify-between px-4 md:px-5 pt-3 md:pt-4 pb-2.5 md:pb-3 border-b border-white/[0.07] shrink-0">
+		<div>
+			<h2 className="text-white font-semibold text-sm md:text-base leading-tight">{name}</h2>
+			<p className="text-xs mt-0.5 capitalize font-medium" style={{ color: accentColor }}>
+				{genres} · {tracks.length} tracks
+			</p>
+		</div>
+
+		{/* Back button — icon only on mobile */}
+		<div
+			className="rounded-xl p-[1.5px] transition-all duration-200 hover:opacity-80"
+			style={{ backgroundColor: `${accentColor}35` }}
+		>
+			<button
+				onClick={onClose}
+				className="flex items-center gap-1.5 px-2 py-1.5 md:px-3 rounded-[10px] text-xs font-medium transition-colors duration-200 hover:bg-white/[0.05] active:scale-[0.97]"
+				style={{ backgroundColor: COLOR_SURFACE, color: accentColor }}
+			>
+				<svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+					<polyline points="15 18 9 12 15 6"/>
+				</svg>
+				<span className="hidden md:inline">Back</span>
+			</button>
+		</div>
+	</div>
+
+	{/* Track list */}
+	<div className="flex-1 min-h-0 overflow-y-auto px-3 md:px-5 py-2 md:py-3 flex flex-col gap-1">
+		{tracks.map((track) => (
+			<a
+				key={track.id}
+				href={track.external_urls.spotify}
+				target="_blank"
+				rel="noopener noreferrer"
+				className="no-underline group"
+			>
+				<div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] transition-colors duration-150">
+					<p className="text-white text-xs md:text-sm font-medium leading-tight">
+						{displayedTrackString(track)}
+					</p>
+					<p className="text-gray-500 text-xs mt-0.5">
+						{displayedArtistString(track)}
+					</p>
+				</div>
+			</a>
+		))}
+	</div>
+
+	{/* Footer */}
+	<div className="flex items-center justify-between px-4 md:px-5 pb-3 md:pb-4 pt-2.5 md:pt-3 border-t border-white/[0.07] shrink-0">
+		{/* Catch button */}
+		<div className="rounded-2xl p-[1.5px]" style={{ backgroundColor: accentColor }}>
+			<button
+				onClick={onCatch}
+				className="px-3 py-1.5 md:px-4 md:py-2 rounded-[14.5px] text-xs md:text-sm font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.97]"
+				style={{ backgroundColor: accentColor, color: COLOR_TEXT_DARK }}
+			>
+				Catch {name}
+			</button>
+		</div>
+
+		<img
+			src={SpotifyText}
+			alt="Spotify"
+			className="h-4 md:h-5"
+			style={{ filter: 'brightness(0) invert(1)', opacity: 0.6 }}
+			draggable="false"
+		/>
+	</div>
 		</div>
 	);
 }

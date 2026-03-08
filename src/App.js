@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import * as $ from "jquery";
 import { clientId } from "./config";
 import { exchangeCodeForToken } from "./utils/auth";
+import { CACHE_KEY, CACHE_TTL, INITIAL_COUNT, BATCH_SIZE } from "./utils/constants";
 
 import "./App.css"
 import MainPage from './pages/MainPage'
@@ -11,6 +12,7 @@ import LoginPage from './pages/LoginPage'
 class App extends Component {
 	constructor() {
 		super();
+		this.spotifyRefreshInterval = null;
 		this.state = {
 			// Pokemons
 			pokemons: [],
@@ -27,7 +29,13 @@ class App extends Component {
 			playlist: null,
 			no_data: false,
 			showPlaylistPopup: false,
-			observerInitialized: false
+			generatingPlaylist: false,
+			playlistError: null,
+			observerInitialized: false,
+			backgroundLoading: false,
+	
+			// Caught Pokemon (IDs whose playlists have been saved to Spotify)
+			caughtPokemonIds: JSON.parse(localStorage.getItem('caughtPokemonIds') || '[]'),
 		};
 		// Pokemon
 		this.handleIntersection = this.handleIntersection.bind(this);
@@ -36,6 +44,17 @@ class App extends Component {
 		// Spotify
 		this.generatePlaylist = this.generatePlaylist.bind(this);
 		this.addPlaylistToAccount = this.addPlaylistToAccount.bind(this);
+		this.recordCaughtPokemon = this.recordCaughtPokemon.bind(this);
+	}
+
+	startSpotifyRefreshInterval() {
+		if (this.spotifyRefreshInterval) return;
+		this.spotifyRefreshInterval = setInterval(() => {
+			const expirationTime = localStorage.getItem('spotifyTokenExpiration');
+			if (expirationTime && Date.now() >= parseInt(expirationTime, 10)) {
+				this.refreshSpotifyToken();
+			}
+		}, 30000);
 	}
 
 
@@ -45,12 +64,19 @@ class App extends Component {
 		const code = urlParams.get('code');
 
 		if (code) {
+			// Clear the code from the URL immediately (synchronous) so that React
+			// StrictMode's second componentDidMount invocation does not attempt to
+			// exchange the same single-use code a second time.
+			window.history.replaceState({}, document.title, "/");
+
 			try {
 				// Exchange the code for tokens
 				const { access_token, refresh_token, expires_in } = await exchangeCodeForToken(code);
 
-				// Clear the code from URL
-				window.history.replaceState({}, document.title, "/");
+				if (!access_token) {
+					this.setState({ token: null });
+					return;
+				}
 
 				// Set token in state
 				this.setState({
@@ -65,24 +91,26 @@ class App extends Component {
 				const expirationTime = Date.now() + (expires_in * 1000);
 				localStorage.setItem('spotifyTokenExpiration', expirationTime);
 
-				// Set interval to check token's expiration time
-				setInterval(() => {
-					const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
-					if (tokenExpirationTime && Date.now() >= tokenExpirationTime) {
-						this.refreshSpotifyToken();
-					}
-				}, 30000);
+				this.startSpotifyRefreshInterval();
 			} catch (error) {
 				console.error('Error exchanging code for token:', error);
 				this.setState({ token: null });
 			}
-		} else {
-			// Check if we have a stored token
+		}
+		else {
+			// Check if we have a valid stored token (guard against a previously stored "undefined" string)
 			const storedToken = localStorage.getItem('spotifyAccessToken');
-			if (storedToken) {
-				this.setState({
-					token: storedToken
-				});
+			if (storedToken && storedToken !== 'undefined' && storedToken !== 'null') {
+				const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
+				if (tokenExpirationTime && Date.now() >= parseInt(tokenExpirationTime, 10)) {
+					// Token already expired; silently refresh before setting state.
+					this.refreshSpotifyToken();
+				}
+				else {
+					this.setState({ token: storedToken });
+				}
+
+				this.startSpotifyRefreshInterval();
 			}
 		}
 	}
@@ -106,6 +134,10 @@ class App extends Component {
 		})
 		.then(response => response.json())
 		.then(data => {
+			if (!data.access_token) {
+				throw new Error(data.error_description || data.error || 'Token refresh failed');
+			}
+
 			// Update state with new access token
 			this.setState({
 				token: data.access_token,
@@ -131,39 +163,107 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
-		this.setSpotifyToken()
+		this._isMounted = true;
+		this.setSpotifyToken();
+
 
 		try {
-			const allPokemonResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1118');
-			const allPokemonData = await allPokemonResponse.json();
-
-			const allPokemonDetails = [];
-			for (let i = 0; i < allPokemonData.results.length; i += 50) {
-				const batchPokemonData = allPokemonData.results.slice(i, i + 50);
-				const batchPokemonDetailsPromises = batchPokemonData.map(async (pokemon) => {
-					const pokemonResponse = await fetch(pokemon.url);
-					return pokemonResponse.json();
-				});
-				const batchPokemonDetails = await Promise.all(batchPokemonDetailsPromises);
-				allPokemonDetails.push(...batchPokemonDetails);
+			// Try cache first
+			const cached = localStorage.getItem(CACHE_KEY);
+			if (cached) {
+				const parsed = JSON.parse(cached);
+				const { timestamp } = parsed;
+				// Support both old format { data } and new format { list, details }
+				const details = parsed.details || parsed.data;
+				const list = parsed.list || details.map(p => ({ name: p.name, url: `https://pokeapi.co/api/v2/pokemon/${p.id}/` }));
+				if (timestamp && Date.now() - timestamp < CACHE_TTL && details && details.length > 0) {
+					this.setState({ pokemons: list, pokemonDetails: details, loading: false });
+					// Resume background loading if cache is incomplete
+					if (details.length < list.length) {
+						this.loadRemainingPokemon(list, details);
+					}
+					return;
+				}
 			}
 
-			this.setState({
-				pokemons: allPokemonData.results,
-				pokemonDetails: allPokemonDetails,
-				loading: false
-			});
+			const listResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1118');
+			const listData = await listResponse.json();
+			const list = listData.results;
 
+			// Load only the first batch to show the UI without delay
+			const firstDetails = await Promise.all(
+				list.slice(0, INITIAL_COUNT).map(p => fetch(p.url).then(r => r.json()))
+			);
+
+			if (!this._isMounted) return;
+			this.setState({ pokemons: list, pokemonDetails: firstDetails, loading: false });
+
+			// Save partial progress to cache immediately
+			this.savePokemonCache(list, firstDetails);
+
+			// Load the rest in the background
+			this.loadRemainingPokemon(list, firstDetails);
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
+	componentWillUnmount() {
+		this._isMounted = false;
+		if (this.spotifyRefreshInterval) {
+			clearInterval(this.spotifyRefreshInterval);
+			this.spotifyRefreshInterval = null;
+		}
+	}
+
+	savePokemonCache(list, details) {
+		try {
+			localStorage.setItem(CACHE_KEY, JSON.stringify({
+				timestamp: Date.now(),
+				list,
+				details
+			}));
+		} catch (e) {
+			// Storage quota exceeded skip caching
+		}
+	}
+
+	async loadRemainingPokemon(list, existingDetails) {
+		const allDetails = [...existingDetails];
+		const startIdx = existingDetails.length;
+
+		if (startIdx >= list.length) return;
+		this.setState({ backgroundLoading: true });
+
+		for (let i = startIdx; i < list.length; i += BATCH_SIZE) {
+			if (!this._isMounted) break;
+			const batch = list.slice(i, Math.min(i + BATCH_SIZE, list.length));
+			try {
+				const batchDetails = await Promise.all(
+					batch.map(p => fetch(p.url).then(r => r.json()))
+				);
+				allDetails.push(...batchDetails);
+				if (!this._isMounted) break;
+				this.setState({ pokemonDetails: [...allDetails] });
+				// Keep cache up to date after every batch
+				this.savePokemonCache(list, allDetails);
+			} catch (e) {
+				console.log('Batch load error:', e);
+			}
+		}
+
+		if (this._isMounted) this.setState({ backgroundLoading: false });
+	}
+
 	componentDidUpdate(prevProps, prevState) {
-		// Check if MainPage has just been loaded and observer hasn't been set yet
+		// Re-attempt observer setup whenever loading is done and it hasn't been
+		// successfully attached yet. This handles the case where loading finishes
+		// before the Spotify token arrives (MainPage not yet in the DOM).
 		if (!this.state.loading && !this.state.observerInitialized) {
-			this.initializeObserver();
-			this.setState({ observerInitialized: true });
+			const attached = this.initializeObserver();
+			if (attached) {
+				this.setState({ observerInitialized: true });
+			}
 		}
 	}
 
@@ -175,7 +275,9 @@ class App extends Component {
 				threshold: 1
 			});
 			this.observer.observe(intersectionElement);
+			return true;
 		}
+		return false;
 	};
 
 	getNextOffset() {
@@ -219,100 +321,148 @@ class App extends Component {
 		}
 	}
 
-	async generatePlaylist(genres, name, id, imgSrc) {
+	async generatePlaylist(genres, name, id, stats) {
+		this.setState({ generatingPlaylist: true, playlistError: null });
+
 		const tokenExpirationTime = localStorage.getItem('spotifyTokenExpiration');
 
-		// Check if the token is expired
-		if (!tokenExpirationTime || Date.now() >= tokenExpirationTime) {
-			try {
-				// Confirm dialog with an OK option
-				if (window.confirm('Your session token has expired. Click OK to refresh the page and re-login.')) {
-					window.location.reload();
+		// Silently refresh if the token is expired before proceeding
+		if (!tokenExpirationTime || Date.now() >= parseInt(tokenExpirationTime, 10)) {
+			await new Promise((resolve) => {
+				const refreshToken = localStorage.getItem('spotifyRefreshToken');
+				if (!refreshToken) {
+					this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false, generatingPlaylist: false });
+					resolve();
+					return;
 				}
-				return;
-			} catch (error) {
-				console.error('Failed to refresh token:', error);
-				this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false });
-				return; // Exit the function if token refresh fails
-			}
+				const params = new URLSearchParams();
+				params.append('grant_type', 'refresh_token');
+				params.append('refresh_token', refreshToken);
+				params.append('client_id', clientId);
+				fetch('https://accounts.spotify.com/api/token', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: params
+				})
+				.then(r => r.json())
+				.then(data => {
+				if (data.access_token) {
+					this.setState({ token: data.access_token });
+					localStorage.setItem('spotifyAccessToken', data.access_token);
+					localStorage.setItem('spotifyTokenExpiration', Date.now() + (data.expires_in * 1000));
+					if (data.refresh_token) {
+						localStorage.setItem('spotifyRefreshToken', data.refresh_token);
+					}
+				} else {
+					this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false, generatingPlaylist: false });
+				}
+				resolve();
+			})
+			.catch(() => {
+				this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false, generatingPlaylist: false });
+				resolve();
+			});
+			});
 		}
 
-		if (this.state.token !== null) {
-			let popularity = Math.floor(Math.random() * 13) * 5 + 40;
+		// Read token directly from localStorage so we always have the freshest value,
+		// regardless of whether React has flushed the setState from the refresh above yet.
+		const activeToken = localStorage.getItem('spotifyAccessToken');
+		if (!activeToken) {
+			this.setState({ generatingPlaylist: false });
+			return;
+		}
 
-			// Generate a random letter or word to search for
-			let searchQuery = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-
+		if (this.state.token !== null || activeToken) {
 			try {
-				// Make a request to the /v1/search endpoint
-				let searchResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`, {
-					headers: {
-						Authorization: `Bearer ${this.state.token}`,
-					},
-				});
-				let searchData = await searchResponse.json();
+				// --- Derive audio features from the Pokemon's stats ---
+				// Each stat is normalized to [0, 1] then given a small random jitter
+				// so repeated generations for the same Pokemon still vary.
+				const getStat = (statName) =>
+					(stats || []).find(s => s.stat.name === statName)?.base_stat ?? 65;
 
-				// Extract a random artist ID from the search results
-				let artistIds = searchData.artists.items.map((artist) => artist.id);
-				let randomArtistId = artistIds[Math.floor(Math.random() * artistIds.length)];
+				const attack  = getStat('attack');
+				const spAtk   = getStat('special-attack');
+				const defense = getStat('defense');
+				const speed   = getStat('speed');
 
-				// Make a call to generate a new playlist
+				// Jitter helpers - keeps values in valid API ranges
+				const jitter = (val, range = 0.1) =>
+					parseFloat(Math.max(0.05, Math.min(0.95, val + (Math.random() - 0.5) * 2 * range)).toFixed(2));
+				const jitterTempo = (base, range = 15) =>
+					Math.round(Math.max(60, Math.min(200, base + (Math.random() - 0.5) * 2 * range)));
+
+				const targetEnergy       = jitter(attack / 190);              // high attack -> intense
+				const targetValence      = jitter(spAtk / 180);               // high sp.atk -> positive/happy
+				const targetDanceability = jitter(speed / 190);               // fast -> danceable
+				const targetAcousticness = jitter(1 - defense / 220);         // tanky -> less acoustic
+				const targetTempo        = jitterTempo(70 + (speed / 200) * 130); // 70-200 BPM
+				// Up to 5 genre seeds from both types (Spotify limit)
+				const seedGenres = (Array.isArray(genres) ? genres : [genres]).slice(0, 5).join(',');
+
 				const data = await new Promise((resolve, reject) => {
 					$.ajax({
-						url: `https://api.spotify.com/v1/recommendations?seed_genres=${genres}`,
-						type: "GET",
+						url: 'https://api.spotify.com/v1/recommendations',
+						type: 'GET',
 						beforeSend: (xhr) => {
-							xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
+							xhr.setRequestHeader('Authorization', 'Bearer ' + activeToken);
 						},
 						data: {
-							seed_artists: randomArtistId,
-							limit: 10,
-							target_popularity: popularity
+							seed_genres:          seedGenres,
+							limit:                10,
+							target_energy:        targetEnergy,
+							target_valence:       targetValence,
+							target_danceability:  targetDanceability,
+							target_acousticness:  targetAcousticness,
+							target_tempo:         targetTempo,
 						},
-						success: (data) => {
-							resolve(data);
-						},
+						success: (data) => resolve(data),
 						error: (error) => {
 							if (error.status === 401) {
-								// Handle 401 error here
-								console.log('401 error: Unauthorized');
-								this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false});
+								this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false });
 							}
 							reject(error);
 						},
 					});
 				});
 
-				// Checks if the data is not empty
-				if (!data || !data.tracks) {
-					this.setState({
-						no_data: true,
-					});
+				if (!data || !data.tracks || data.tracks.length === 0) {
+					this.setState({ no_data: true, generatingPlaylist: false });
 					return;
 				}
 
-				this.setState(
-					{
-						playlist: {
-							id: null,
-							name: `${name}'s Playlist`,
-							description: "This playlist was created using PokeFi",
-							external_urls: null,
-							tracks: data.tracks,
-							genres: genres,
-							added: false,
-						},
-						showPlaylistPopup: true, // Set the value of showPlaylistPopup to true
-					}
-				);
-			} catch (error) {
-				console.error("Error during playlist generation:", error);
-				// Handle session expiration or other unexpected errors
-				if (window.confirm('An error occurred while generating the playlist. Your session may have expired. Click OK to refresh the page and re-login.')) {
-					window.location.reload();
-				}
+			this.setState({
+				playlist: {
+					id: null,
+					pokemonId: id,
+					name: `${name}'s Playlist`,
+					description: 'This playlist was created using PokeFi',
+					external_urls: null,
+					tracks: data.tracks,
+					genres: Array.isArray(genres) ? genres[0] : genres,
+					added: false,
+				},
+				showPlaylistPopup: true,
+				generatingPlaylist: false,
+			});
+		} catch (error) {
+			console.error('Error during playlist generation:', error);
+			if (error.status === 401) {
+				this.refreshSpotifyToken();
 			}
+			this.setState({ generatingPlaylist: false, playlistError: 'Could not generate playlist. Please try again.' });
 		}
+		}
+	}
+
+	recordCaughtPokemon(pokemonId) {
+		if (!pokemonId) return;
+		this.setState(prev => {
+			if (prev.caughtPokemonIds.includes(pokemonId)) return null;
+			const updated = [...prev.caughtPokemonIds, pokemonId];
+			localStorage.setItem('caughtPokemonIds', JSON.stringify(updated));
+			return { caughtPokemonIds: updated };
+		});
 	}
 
 	addPlaylistToAccount() {
@@ -337,8 +487,8 @@ class App extends Component {
 				if (existingPlaylist) {
 					// If there is an existing playlist with the same name, update it
 					$.ajax({
-						url: `https://api.spotify.com/v1/playlists/${existingPlaylist.id}/tracks`,
-						type: "PUT",
+					url: `https://api.spotify.com/v1/playlists/${existingPlaylist.id}/items`,
+					type: "PUT",
 						beforeSend: (xhr) => {
 							xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
 						},
@@ -346,10 +496,10 @@ class App extends Component {
 						data: JSON.stringify({
 							uris: this.state.playlist.tracks.map((track) => track.uri),
 						}),
-						success: () => {
-							// Redirect to the updated playlist URL
-							window.open(existingPlaylist.external_urls.spotify, '_blank');
-						},
+					success: () => {
+						window.open(existingPlaylist.external_urls.spotify, '_blank');
+						this.recordCaughtPokemon(this.state.playlist.pokemonId);
+					},
 					});
 				}
 
@@ -369,8 +519,8 @@ class App extends Component {
 						success: (playlist) => {
 							// Add tracks to the playlist
 							$.ajax({
-								url: `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
-								type: "POST",
+						url: `https://api.spotify.com/v1/playlists/${playlist.id}/items`,
+							type: "POST",
 								beforeSend: (xhr) => {
 									xhr.setRequestHeader("Authorization", "Bearer " + this.state.token);
 								},
@@ -378,10 +528,10 @@ class App extends Component {
 								data: JSON.stringify({
 									uris: this.state.playlist.tracks.map((track) => track.uri),
 								}),
-								success: () => {
-									// Redirect to the new playlist URL
-									window.open(playlist.external_urls.spotify, '_blank');
-								},
+							success: () => {
+								window.open(playlist.external_urls.spotify, '_blank');
+								this.recordCaughtPokemon(this.state.playlist.pokemonId);
+							},
 							});
 						},
 					});
@@ -392,7 +542,7 @@ class App extends Component {
 
 
 	render() {
-		const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, token, showPlaylistPopup, playlist} = this.state;
+		const { pokemonDetails, loading, selectedPokemon, description, evolutionChain, offset, loadNumber, token, showPlaylistPopup, playlist, generatingPlaylist, playlistError, backgroundLoading } = this.state;
 
 		return (
 			<div className='bg-[#2b292c] h-dvh'>
@@ -409,14 +559,17 @@ class App extends Component {
 						generatePlaylistFromParams={this.generatePlaylist}
 						handleLogout={() => this.setState({ token: null, showPlaylistPopup: false })}
 						showPlaylistPopup={showPlaylistPopup}
+						generatingPlaylist={generatingPlaylist}
+						playlistError={playlistError}
+						backgroundLoading={backgroundLoading}
 						playlist={playlist}
 						onPlaylistPopupClose={() => this.setState({ showPlaylistPopup: false })}
 						onPlaylistCatch={this.addPlaylistToAccount}
 					/>
 				) : (
-				<div className='flex justify-center items-center'>
-					<LoginPage/>
-				</div>
+					<div className='flex justify-center items-center'>
+						<LoginPage/>
+					</div>
 				)}
 			</div>
 		);
