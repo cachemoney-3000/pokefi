@@ -95,6 +95,8 @@ class App extends Component {
 			} catch (error) {
 				console.error('Error exchanging code for token:', error);
 				this.setState({ token: null });
+			} finally {
+				localStorage.removeItem('code_verifier');
 			}
 		}
 		else {
@@ -321,6 +323,44 @@ class App extends Component {
 		}
 	}
 
+	requestSpotify(url, activeToken, data = {}) {
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url,
+				type: 'GET',
+				beforeSend: (xhr) => {
+					xhr.setRequestHeader('Authorization', 'Bearer ' + activeToken);
+				},
+				data,
+				success: resolve,
+				error: reject,
+			});
+		});
+	}
+
+	async searchTracksByGenre(genres, activeToken) {
+		const genreList = (Array.isArray(genres) ? genres : [genres]).filter(Boolean);
+		const searches = (genreList.length > 0 ? genreList : ['pop']).slice(0, 2).map((genre) =>
+			this.requestSpotify('https://api.spotify.com/v1/search', activeToken, {
+				q: `genre:"${genre}"`,
+				type: 'track',
+				limit: 10,
+			})
+		);
+		const responses = await Promise.all(searches);
+		const uniqueTracks = new Map();
+
+		responses.forEach((response) => {
+			(response?.tracks?.items || []).forEach((track) => {
+				if (track?.id) uniqueTracks.set(track.id, track);
+			});
+		});
+
+		return Array.from(uniqueTracks.values())
+			.sort(() => Math.random() - 0.5)
+			.slice(0, 10);
+	}
+
 	async generatePlaylist(genres, name, id, stats) {
 		this.setState({ generatingPlaylist: true, playlistError: null });
 
@@ -400,14 +440,12 @@ class App extends Component {
 				// Up to 5 genre seeds from both types (Spotify limit)
 				const seedGenres = (Array.isArray(genres) ? genres : [genres]).slice(0, 5).join(',');
 
-				const data = await new Promise((resolve, reject) => {
-					$.ajax({
-						url: 'https://api.spotify.com/v1/recommendations',
-						type: 'GET',
-						beforeSend: (xhr) => {
-							xhr.setRequestHeader('Authorization', 'Bearer ' + activeToken);
-						},
-						data: {
+				let tracks;
+				try {
+					const data = await this.requestSpotify(
+						'https://api.spotify.com/v1/recommendations',
+						activeToken,
+						{
 							seed_genres:          seedGenres,
 							limit:                10,
 							target_energy:        targetEnergy,
@@ -415,19 +453,37 @@ class App extends Component {
 							target_danceability:  targetDanceability,
 							target_acousticness:  targetAcousticness,
 							target_tempo:         targetTempo,
-						},
-						success: (data) => resolve(data),
-						error: (error) => {
-							if (error.status === 401) {
-								this.setState({ token: null, selectedPokemon: null, showPlaylistPopup: false });
+						}
+					);
+					tracks = data?.tracks || [];
+					if (tracks.length === 0) {
+						const genreOnlyData = await this.requestSpotify(
+							'https://api.spotify.com/v1/recommendations',
+							activeToken,
+							{
+								seed_genres: seedGenres,
+								limit: 10,
 							}
-							reject(error);
-						},
-					});
-				});
+						);
+						tracks = genreOnlyData?.tracks || [];
+					}
+					if (tracks.length === 0) {
+						tracks = await this.searchTracksByGenre(genres, activeToken);
+					}
+				} catch (error) {
+					// Recommendations is unavailable to new and Development Mode
+					// Spotify apps. Search remains available and returns compatible
+					// track objects, so use it as the generation fallback.
+					if (error.status !== 403 && error.status !== 404) throw error;
+					tracks = await this.searchTracksByGenre(genres, activeToken);
+				}
 
-				if (!data || !data.tracks || data.tracks.length === 0) {
-					this.setState({ no_data: true, generatingPlaylist: false });
+				if (tracks.length === 0) {
+					this.setState({
+						no_data: true,
+						generatingPlaylist: false,
+						playlistError: 'Spotify could not find tracks for this Pokémon. Please try again.',
+					});
 					return;
 				}
 
@@ -438,7 +494,7 @@ class App extends Component {
 					name: `${name}'s Playlist`,
 					description: 'This playlist was created using PokeFi',
 					external_urls: null,
-					tracks: data.tracks,
+					tracks,
 					genres: Array.isArray(genres) ? genres[0] : genres,
 					added: false,
 				},

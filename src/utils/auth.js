@@ -1,11 +1,13 @@
+import { clientId, redirectUri } from '../config';
+
 async function exchangeCodeForToken(code) {
     const codeVerifier = localStorage.getItem('code_verifier');
 
     const params = new URLSearchParams();
-    params.append("client_id", process.env.REACT_APP_CLIENT_ID);
+    params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", process.env.REACT_APP_REDIRECT_URI);
+    params.append("redirect_uri", redirectUri);
     params.append("code_verifier", codeVerifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {

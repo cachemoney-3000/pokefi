@@ -24,9 +24,11 @@ function LoginPage() {
 
 	useEffect(() => {
 		const setupAuth = async () => {
-			const codeVerifier = generateCodeVerifier(128);
-			const codeChallenge = await generateCodeChallenge(codeVerifier);
+			// React StrictMode can run this effect twice in development. Reuse the
+			// same verifier so the stored value always matches Spotify's challenge.
+			const codeVerifier = localStorage.getItem("code_verifier") || generateCodeVerifier(128);
 			localStorage.setItem("code_verifier", codeVerifier);
+			const codeChallenge = await generateCodeChallenge(codeVerifier);
 
 			const authUrl = new URL(authEndpoint);
 			authUrl.search = new URLSearchParams({
